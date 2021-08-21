@@ -12,7 +12,7 @@ class dbWrapper
 
     private false|mysqli $link;
     private false|mysqli_stmt $stmt;
-    private false|mysqli_result $result;
+    public false|mysqli_result $result;
     private bool $escape_result = false;
 
     /**
