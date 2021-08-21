@@ -183,6 +183,31 @@
     </div>
 </div>
 
+<div class="w3-section">
+    <h2 class="w3-text-primary">Spieler ändern</h2>
+    <form method="post">
+        <label for="spieler_select">Spieler auswählen</label>
+        <select required
+                name="spieler_select"
+                id="spieler_select"
+                class="w3-select w3-border w3-border-primary">
+            <option selected disabled>Bitte wählen</option>
+            <?php foreach ($kader as $spieler): ?>
+                <option value="<?= $spieler->id() ?>"><?= $spieler->id() ?> | <?= $spieler->get_name() ?></option>
+            <?php endforeach; ?>
+        </select>
+        <label for="aenderung_text">Änderung beschreiben</label>
+        <textarea required
+                  id="aenderung_text"
+                  name="aenderung_text"
+                  rows="2"
+                  class="w3-input w3-border w3-border-primary"></textarea>
+        <p>
+            <button type="submit" name="spieler_aendern" class="w3-button w3-tertiary">Änderung beantragen</button>
+        </p>
+    </form>
+</div>
+
 <script>
     // Get the modal
     var modal = document.getElementById('spieler_eintragen');

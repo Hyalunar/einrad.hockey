@@ -58,3 +58,18 @@ if (isset($_POST['submit_takeover'])) {
         }
     }
 }
+
+if (isset($_POST['spieler_aendern'])){
+    $selected_spieler = $kader[$_POST['spieler_select']] ?? false;
+    $text = $_POST['aenderung_text'] ?? false;
+    if(
+        $selected_spieler
+        && $text
+    ) {
+        $selected_spieler->change_request($_POST['aenderung_text']);
+        Helper::reload();
+    } else {
+        Html::error("Bitte Spieler und Text angeben.");
+    }
+
+}

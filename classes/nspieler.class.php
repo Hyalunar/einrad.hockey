@@ -437,4 +437,31 @@ class nSpieler
                 ";
         return db::$db->query($sql)->affected_rows() > 0;
     }
+    public function change_request(String $text) {
+        $mailer = PHPMailer::load_phpmailer();
+        $mailer->addAddress(Env::LAMAIL);
+        $kontakt = new Kontakt($this->team_id);
+        $emails = (new Kontakt($this->team_id))->get_emails();
+        foreach ($emails as $email) {
+            $mailer->addReplyTo($email);
+        }
+        $mailer->setFrom(Env::SMTP_HOST, 'Einradhockey Mailbot'); // Betreff der Email
+        $mailer->Subject = 'Spieler bitte ändern'; // Betreff der Email
+
+        $text = db::escape($text);
+        ob_start();
+            include(Env::BASE_PATH . "/templates/mails/mail_spieler_aendern.tmp.php");
+        $inhalt = ob_get_clean();
+
+        $mailer->Body = $inhalt;
+        echo $inhalt;
+
+        if (MailBot::send_mail($mailer)) {
+            Html::info("Der Antrag wurde versendet.");
+        } else {
+            Html::error("Es ist ein Fehler aufgetreten. E-Mail konnte nicht versendet werden.
+             Manuell versenden: " . Html::mailto(Env::LAMAIL), esc: false);
+            Helper::log(Config::LOG_KONTAKTFORMULAR, "Error: Spieler ändern beantragen.");
+        }
+    }
 }
