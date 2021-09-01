@@ -3,8 +3,9 @@
 // Inititalisierung
 
 $team_id = (Helper::$teamcenter) ? $_SESSION['logins']['team']['id'] : (int) @$_GET['team_id'];
+
 if (Team::is_ligateam($team_id)){
-    $team = new Team ($team_id);
+    $team =nTeam::get($team_id);
     $kontakte = new Kontakt ($team->id);
     $emails = $kontakte->get_emails_with_details();
 }

@@ -11,12 +11,13 @@ class nTeam
      * @var int
      */
     public int $team_id;
+    public int $id;
     public ?string $teamname;
     public ?string $ligateam;
     public ?string $passwort;
     public ?string $passwort_geaendert;
-    public ?string $freilose;
-    public ?string $zweites_freilos;
+    public int $freilose;
+    public ?string $schiri_freilos;
     public ?string $aktiv;
 
     public ?int $plz;
@@ -28,12 +29,33 @@ class nTeam
     public ?string $trikot_farbe_1;
     public ?string $trikot_farbe_2;
 
+    private bool $error = false;
+
     /**
      * @return bool
      */
-    public function check_ligateam(): bool
+    public function is_ligateam(): bool
     {
         return $this->ligateam === 'Ja';
+    }
+
+    /**
+     * @return bool
+     */
+    public function is_aktiv(): bool
+    {
+        return $this->aktiv === 'Ja';
+    }
+
+    /**
+     * @return bool
+     */
+    public function schiri_freilos_erhalten(): bool
+    {
+        $erhalten_am = empty($this->schiri_freilos)
+            ? 0
+            : strtotime($this->schiri_freilos);
+        return $erhalten_am >= strtotime(Config::SAISON_ANFANG);
     }
 
     /**
@@ -71,6 +93,15 @@ class nTeam
     }
 
     /**
+     * @param String $passwort
+     * @return bool
+     */
+    public function is_correct_passwort(String $passwort): bool
+    {
+        return password_verify($passwort, $this->passwort);
+    }
+
+    /**
      * @return string|null
      */
     public function get_freilose(): ?string
@@ -79,9 +110,9 @@ class nTeam
     }
 
     /**
-     * @param string|null $freilose
+     * @param int $freilose
      */
-    public function set_freilose(?string $freilose): void
+    public function set_freilose(int $freilose): void
     {
         $this->freilose = $freilose;
     }
@@ -90,26 +121,24 @@ class nTeam
      */
     public function add_freilos(): void
     {
-        ++$this->freilose;
+        $this->freilose++;
     }
 
     /**
      * @return string|null
      */
-    public function get_zweites_freilos(): ?string
+    public function get_schiri_freilos(): ?string
     {
-        return $this->zweites_freilos;
+        return $this->schiri_freilos;
     }
 
     /**
      */
-    public function set_zweites_freilos(): void
+    public function set_schiri_freilos(): void // TODO CHECKS EINBAUEN
     {
-
-        $this->zweites_freilos = date("Y-m-d h:i:s");
+        $this->schiri_freilos = date("Y-m-d h:i:s");
     }
 
-    private bool $error;
 
     /**
      * @return string
@@ -159,14 +188,6 @@ class nTeam
     }
 
     /**
-     * @return bool
-     */
-    public function check_aktiv(): bool
-    {
-        return $this->aktiv === 'Ja';
-    }
-
-    /**
      * @param string $aktiv
      */
     public function set_aktiv(string $aktiv): void
@@ -183,10 +204,10 @@ class nTeam
     }
 
     /**
-     * @param int|null $plz
+     * @param int $plz
      * @return nTeam
      */
-    public function set_plz(?int $plz): nTeam
+    public function set_plz(int $plz): nTeam
     {
         $this->plz = $plz;
         return $this;
@@ -259,9 +280,10 @@ class nTeam
     }
 
     /**
-     * @param string|null $ligavertreter
+     * @param string $ligavertreter
+     * @return nTeam
      */
-    public function set_ligavertreter(?string $ligavertreter): nTeam
+    public function set_ligavertreter(string $ligavertreter): nTeam
     {
         $this->ligavertreter = $ligavertreter;
         return $this;
@@ -275,60 +297,81 @@ class nTeam
         return db::escape($this->teamfoto);
     }
 
+    public function is_teamfoto(): bool
+    {
+        if (file_exists($this->teamfoto)) {
+            return true;
+        }
+
+        if (!empty($this->teamfoto)) {
+            trigger_error("Teamfoto wurde nicht gefunden.");
+        }
+
+        return false;
+    }
+
     /**
      * @param string|null $teamfoto
      * @return nTeam
      */
-    public function set_teamfoto(?string $teamfoto): nTeam
+    public function set_teamfoto(?string $teamfoto): nTeam  //TODO Checks einbauen, hochladen?
     {
         $this->teamfoto = $teamfoto;
         return $this;
     }
 
     /**
+     * @param int $kit
      * @return string|null
      */
-    public function get_trikot_farbe_1(): ?string
+    public function get_trikot_farbe(int $kit): ?string
     {
-        return db::escape($this->trikot_farbe_1);
+        $trikot_farbe = "trikot_farbe_" . $kit;
+        return db::escape($this->$trikot_farbe);
     }
 
     /**
-     * @param string|null $trikot_farbe_1
-     * @return nTeam
-     */
-    public function set_trikot_farbe_1(?string $trikot_farbe_1): nTeam
-    {
-        $this->trikot_farbe_1 = $trikot_farbe_1;
-        return $this;
-    }
-
-    /**
+     * @param int $kit
      * @return string|null
      */
-    public function get_trikot_farbe_2(): ?string
+    public function check_trikot_farbe(int $kit): ?string
     {
-        return db::escape($this->trikot_farbe_2);
+
+        $trikot_farbe = "trikot_farbe_" . $kit;
+
+        if (empty($this->$trikot_farbe)) {
+            return true;
+        }
+
+        return !preg_match('/^#[a-f0-9]{6}$/i', $this->$trikot_farbe);
     }
 
     /**
-     * @param string|null $trikot_farbe_2
+     * @param int $kit
+     * @param string|null $farbe
      * @return nTeam
      */
-    public function set_trikot_farbe_2(?string $trikot_farbe_2): nTeam
+    public function set_trikot_farbe(int $kit, ?string $farbe): nTeam
     {
-        $this->trikot_farbe_2 = $trikot_farbe_2;
+        $trikot_farbe = "trikot_farbe_" . $kit;
+        $this->$trikot_farbe = $farbe;
+
+        if (!$this->check_trikot_farbe($kit)) {
+            $this->error = true;
+            Html::error("Es wurde eine ugültige Farbe übermittelt.");
+        }
+
         return $this;
     }
 
     /**
      * Team constructor.
      */
-    public function __construct()
-    {
+    public function __construct(){
+        $this->id = $this->team_id ?? null;
     }
 
-    public static function get(int $team_id): object
+    public static function get(int $team_id): nTeam
     {
         $sql = "
                 SELECT *  
@@ -349,7 +392,7 @@ class nTeam
                 ON teams_details.team_id = teams_liga.team_id
                 WHERE teams_liga.aktiv = 'Nein'
                 ";
-        return db::$db->query($sql)->fetch_object(__CLASS__);
+        return db::$db->query($sql)->fetch_objects(__CLASS__, "team_id");
     }
 
     public static function get_aktiv(int $team_id): object
@@ -361,7 +404,7 @@ class nTeam
                 ON teams_details.team_id = teams_liga.team_id
                 WHERE teams_liga.aktiv = 'Ja'
                 ";
-        return db::$db->query($sql)->fetch_object(__CLASS__);
+        return db::$db->query($sql)->fetch_objects(__CLASS__, "team_id");
     }
 
     public function get_kader(int $saison = Config::SAISON): array
@@ -369,23 +412,31 @@ class nTeam
         return nSpieler::get_kader($this->team_id, $saison); //TODO: Funktion hierein!
     }
 
-    public function speichern($new = false): void
+    public function insert_to_db() {
+
+        if ($this->error) {
+            Html::error("Team konnte nicht eingetragen werden.");
+            return;
+        }
+
+        $sql = "INSERT INTO teams_liga VALUES ()";
+        db::$db->query($sql)->log();
+
+        $team_id = db::$db->get_last_insert_id();
+        $this->team_id = $team_id;
+
+        $sql = "INSERT INTO teams_details (team_id) VALUES (?)";
+        db::$db->query($sql, $team_id)->log();
+
+        $this->speichern(); //TODO Dies ebenfalls in nSpieler so übernehmen
+
+    }
+
+    public function speichern(): void
     {
         if ($this->error) {
             Html::error("Team konnte nicht gespeichert werden.");
             return;
-        }
-        if ($new) {
-
-            $sql = "INSERT INTO teams_liga VALUES ()";
-            db::$db->query($sql)->log();
-
-            $team_id = db::$db->get_last_insert_id();
-            $this->team_id = $team_id;
-
-            $sql = "INSERT INTO teams_details (team_id) VALUES (?)";
-            db::$db->query($sql, $team_id)->log();
-
         }
 
         $sql = "
@@ -405,7 +456,7 @@ class nTeam
             $this->passwort,
             $this->passwort_geaendert,
             $this->freilose,
-            $this->zweites_freilos,
+            $this->schiri_freilos,
             $this->aktiv
         ];
 
@@ -436,4 +487,19 @@ class nTeam
 
         db::$db->query($sql, $params)->log();
     }
+
+    /**
+     * @return string
+     */
+    public function get_link_teamdaten_aendern(): string
+    {
+
+        if (Helper::$ligacenter) {
+            return Env::BASE_URL . "/ligacenter/lc_teamdaten_aendern.php?team_id=" . $this->team_id;
+        }
+
+        return Env::BASE_URL . "/teamcenter/tc_teamdaten_aendern.php?team_id=" . $this->team_id;
+
+    }
+
 }
