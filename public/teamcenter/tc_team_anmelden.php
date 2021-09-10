@@ -20,9 +20,10 @@ $turnier = new Turnier ($turnier_id);
 if (empty($turnier->details)){
     Helper::not_found("Turnier wurde nicht gefunden.");
 }
-if (strtotime($turnier->details['datum']) < time()) {
-    trigger_error("Das Turnier liegt in der Vergangenheit.", E_USER_ERROR);
-}
+//
+//if (strtotime($turnier->details['datum']) + 23 < time()) {
+//     Html::error("Das Turnier liegt in der Vergangenheit.");
+//}
 
 if ($turnier->details['art'] == 'spass'){
     $kontakt = new Kontakt ($turnier->details['ausrichter']);
@@ -55,16 +56,16 @@ if (isset($_POST['anmelden'])){
     }
     //Test schon angemeldet
     if ($team_angemeldet){
-        Html::error ("Dein Team ist schon zum Turnier angemeldet");
+        Html::error ("Dein Team ist schon zum Turnier angemeldet.");
         $error = true;
     }
     //Richtige Phase
-    if ($turnier->details['phase'] == 'spielplan'){
-        Html::error ("Das Turnier befindet sich bereits in der Spielplanphase. Anmeldung nur noch über den Ligaausschuss: " . Html::mailto(Env::LAMAIL));
+    if ($turnier->details['phase'] === 'spielplan'){
+        Html::error ("Das Turnier befindet sich bereits in der Spielplanphase. Anmeldung ist nicht mehr möglich.");
         $error = true;
     }
     if ($turnier->details['phase'] == 'ergebnis'){
-        Html::error ("Das Turnier ist schon in der Ergebnisphase. Melde dich bei " .Html::mailto(Env::LAMAIL));
+        Html::error ("Das Turnier ist schon in der Ergebnisphase. Eine Anmeldung ist nicht mehr möglich.");
         $error = true;
     }
 
@@ -124,11 +125,11 @@ if (isset($_POST['freilos'])){
         $error = true;
     }
     if ($turnier->details['phase'] == 'spielplan'){
-        Html::error ("Das Turnier befindet sich bereits in der Spielplanphase. Anmeldung nur noch über den Ligaausschuss: " . Html::mailto(Env::LAMAIL));
+        Html::error ("Das Turnier befindet sich bereits in der Spielplanphase. Eine Anmeldung ist nicht mehr möglich.");
         $error = true;
     }
     if ($turnier->details['phase'] == 'ergebnis'){
-        Html::error ("Das Turnier ist schon in der Ergebnisphase. Melde dich bei " .Html::mailto(Env::LAMAIL));
+        Html::error ("Das Turnier ist schon in der Ergebnisphase. Eine Anmeldung ist nicht mehr möglich."); // TODO: Doppelte Checks. Turnierklasse neu schreiben!
         $error = true;
     }
     if ($turnier->details['phase'] == 'melde' && $turnier->check_team_block($_SESSION['logins']['team']['id'])){
@@ -164,7 +165,8 @@ if (isset($_POST['abmelden']) && isset($_SESSION['logins']['team'])){
     }
     if (time() > $abmelden_moeglich_bis && $liste == 'spiele'){
         $error = true;
-        Html::error ("Abmeldungen von der Spielen-Liste sind nur bis Freitag 23:59 zwei Wochen vor dem Turnier möglich. Bitte nehmt via Email Kontakt mit dem Ligaausschuss auf: " .Html::mailto(Env::LAMAIL). "");
+        Html::error ("Abmeldungen von der Spielen-Liste sind nur bis Freitag 23:59 zwei Wochen vor dem Turnier möglich. Bitte nehmt via Email Kontakt mit dem Ligaausschuss auf: " .Html::mailto(Env::LAMAIL). "",
+            esc:false);
     }
     if (!$error){
 
@@ -219,11 +221,11 @@ include '../../templates/header.tmp.php';
 <?= Html::link('../liga/turnier_details.php?turnier_id=' . $turnier->details['turnier_id'],
     "Turnierdetails",
     false,
-    "keyboard_arrow_left") ?>
-<?= Html::link('../liga/tc_turnierliste_anmelden.php?turnier_id=' . $turnier->details['turnier_id'],
-    "Turnieranmeldeliste",
+    "launch") ?>
+<?= Html::link('../teamcenter/tc_turnierliste_anmelden.php?turnier_id=' . $turnier->details['turnier_id'],
+    "Zurück zur Turnieranmeldeliste",
     false,
-    "keyboard_arrow_right") ?>
+    "launch") ?>
 
 <!-- Anzeigen der angemeldeten Teams und gleichzeitig Abmeldeformular -->
 <div class="w3-card w3-container">

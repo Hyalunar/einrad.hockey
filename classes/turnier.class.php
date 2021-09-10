@@ -162,6 +162,25 @@ class Turnier
     }
 
     /**
+     * Finalturniere erhalten
+     *
+     * Where-Klause für SQl-Query
+     * @param int $saison
+     * @return array
+     */
+    public static function get_finalturniere(int $saison = Config::SAISON): array
+    {
+        $sql = "
+            SELECT *
+            FROM turniere_liga
+            LEFT JOIN turniere_details ON turniere_liga.turnier_id = turniere_details.turnier_id
+            WHERE saison = ?
+            AND art LIKE 'final';
+            ";
+        return db::$db->query($sql, $saison)->esc()->fetch('turnier_id');
+    }
+
+    /**
      * Get Turniere, welche ein Team ausrichtet.
      *
      * @param int $team_id Ausrichter
@@ -662,11 +681,11 @@ class Turnier
     /**
      * Statischer Check  des Teamblocks/Turnierblocks
      *
-     * @param string $team_block
+     * @param string|null $team_block
      * @param string $turnier_block
      * @return bool
      */
-    public static function check_team_block_static(string $team_block, string $turnier_block): bool
+    public static function check_team_block_static(?string $team_block, string $turnier_block): bool
     {
         if ($team_block === NULL) {
             return true;
@@ -783,7 +802,7 @@ class Turnier
      *
      * @return array
      */
-    public function get_logs(): array
+    public function get_turnier_logs(): array
     {
         $sql = "
                 SELECT * 
