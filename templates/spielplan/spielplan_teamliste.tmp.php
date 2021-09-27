@@ -9,19 +9,19 @@
                 <th><?= Html::icon("reorder") ?><br>Block</th>
                 <th class="w3-hide-small"><?= Html::icon("arrow_circle_up") ?><br>Wertung</th>
             </tr>
-            <?php foreach ($spielplan->teamliste as $team_id => $team) { ?>
+            <?php foreach ($spielplan->teamliste as $team_id => $team): ?>
                 <tr>
                     <td><?= $team_id ?></td>
                     <td><?= $team["teamname"] ?></td>
                     <td><?= $team["tblock"] ?></td>
                     <td class="w3-hide-small"><?= $team["wertigkeit"] ?></td>
                 </tr>
-            <?php }//end foreach?>
+            <?php endforeach; ?>
         </table>
     </div>
-    <?php if (in_array(NULL, array_column($spielplan->teamliste, 'tblock'), true)) { ?>
+    <?php if (in_array(NULL, array_column($spielplan->teamliste, 'tblock'), true)): ?>
         <span class="w3-text-grey">* Nichtligateam</span>
-    <?php } //endif?>
+    <?php endif; ?>
     <!-- Modal-Button -->
     <span class="w3-button pdf-hide w3-text-primary"
           onclick="document.getElementById('teamliste_details').style.display='block'">
@@ -40,25 +40,25 @@
                     <th><?= Html::icon("group") ?><br>Team</th>
                     <th><?= Html::icon("reorder") ?><br>Block</th>
                     <th><?= Html::icon("arrow_circle_up") ?><br>Wertung</th>
-                    <?php if ($spielplan->turnier->get_phase() !== 'ergebnis') { ?>
+                    <?php if ($spielplan->turnier->get_phase() !== 'ergebnis'): ?>
                         <th><span class="pdf-hide"><?= Html::icon("invert_colors") ?><br>Trikots</span></th>
-                    <?php } //endif?>
+                    <?php endif; ?>
                     <th><span class="pdf-hide"><?= Html::icon("account_circle") ?><br>Ligavertreter</span></th>
                     <th><span class="pdf-hide"><?= Html::icon("help_outline") ?><br>Kontakt</span></th>
                 </tr>
-                <?php foreach ($spielplan->teamliste as $team_id => $team) { ?>
+                <?php foreach ($spielplan->teamliste as $team_id => $team): ?>
                     <tr>
                         <td><?= $team_id ?></td>
                         <td><?= $team["teamname"] ?></td>
                         <td><?= $team["tblock"] ?></td>
                         <td><?= $team["wertigkeit"] ?></td>
-                        <?php if ($spielplan->turnier->get_phase !== 'ergebnis') { ?>
+                        <?php if ($spielplan->turnier->get_phase !== 'ergebnis'): ?>
                             <td>
                                 <span class="pdf-hide">
                                     <?= Html::trikot_punkt($team['trikot_farbe_1'], $team['trikot_farbe_2']) ?>
                                 </span>
                             </td>
-                        <?php } // end if ?>
+                        <?php endif; ?>
                         <td>
                             <span class="pdf-hide"><?= $team["ligavertreter"] ?></span>
                         </td>
@@ -68,11 +68,12 @@
                             </span>
                         </td>
                     </tr>
-                <?php }//end foreach ?>
+                <?php endforeach; ?>
             </table>
         </div>
     </div>
 </div>
+
 <script>
     // When the user clicks anywhere outside of the modal, close it
     window.addEventListener("click", function (event) {

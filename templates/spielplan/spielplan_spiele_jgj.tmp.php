@@ -49,15 +49,15 @@
                 <br>
                 Tore
             </th>
-            <?php if ($spielplan->check_penalty_anzeigen()) { ?>
+            <?php if ($spielplan->check_penalty_anzeigen()): ?>
                 <th>
                     <?= Html::icon("priority_high") ?>
                     <br>
                     Penalty
                 </th>
-            <?php }//endif?>
+            <?php endif; ?>
         </tr>
-        <?php if ($spielplan->turnier->get_besprechung() === 'Ja') { ?>
+        <?php if ($spielplan->turnier->get_besprechung() === 'Ja'): ?>
             <tr class="w3-primary-3">
                 <td><?= date('H:i', strtotime($spielplan->turnier->get_startzeit()) - 15 * 60) ?></td>
                 <td></td>
@@ -67,12 +67,12 @@
                 </td>
                 <td></td>
                 <td class="w3-hide-small"></td>
-                <?php if ($spielplan->check_penalty_anzeigen()) { ?>
+                <?php if ($spielplan->check_penalty_anzeigen()): ?>
                     <td></td>
-                <?php } //endif ?>
+                <?php endif; ?>
             </tr>
-        <?php }//endif?>
-        <?php foreach ($spielplan->spiele as $spiel_id => $spiel) { ?>
+        <?php endif; ?>
+        <?php foreach ($spielplan->spiele as $spiel_id => $spiel): ?>
             <tr>
                 <!-- Uhrzeit -->
                 <td><?= $spiel["zeit"] ?></td>
@@ -158,7 +158,7 @@
                         </span>
                     </span>
                 </td>
-                <?php if ($spielplan->check_penalty_anzeigen()) { ?>
+                <?php if ($spielplan->check_penalty_anzeigen()): ?>
                     <!-- Pen Desktop -->
                     <td>
                         <table class="w3-table w3-centered w3-hide-small w3-text-secondary" style="width: auto; margin: auto;">
@@ -183,9 +183,9 @@
                             </span>
                         </span>
                     </td>
-                <?php } //endif?>
+                <?php endif; ?>
             </tr>
-            <?php if ($spielplan->get_pause($spiel_id) > 0) { ?>
+            <?php if ($spielplan->get_pause($spiel_id) > 0): ?>
                 <tr>
                     <td>
                         <?= date("H:i",
@@ -201,11 +201,11 @@
                     </td>
                     <td></td>
                     <td class="w3-hide-small"></td>
-                    <?php if ($spielplan->check_penalty_anzeigen()) { ?>
+                    <?php if ($spielplan->check_penalty_anzeigen()): ?>
                         <td></td>
-                    <?php } //endif ?>
+                    <?php endif; ?>
                 </tr>
-            <?php }// endif?>
-        <?php }// end foreach?>
+            <?php endif; ?>
+        <?php endforeach; ?>
     </table>
 </div>

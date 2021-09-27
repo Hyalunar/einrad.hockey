@@ -39,12 +39,12 @@
                     Penalty
                 </th>
             </tr>
-            <?php foreach ($spielplan->spiele as $spiel_id => $spiel) { ?>
+            <?php foreach ($spielplan->spiele as $spiel_id => $spiel): ?>
                 <tr <?php if (!is_null($spiel["tore_a"])
                         && !is_null($spiel["tore_b"])
-                        && !$spielplan->check_penalty_spiel($spiel_id, true)) { ?>
+                        && !$spielplan->check_penalty_spiel($spiel_id, true)): ?>
                         class="w3-pale-green"
-                    <?php } //endif?>
+                    <?php endif; ?>
                 >
                     <td><?= $spiel["zeit"] ?></td>
                     <!-- Schiris -->
@@ -126,7 +126,7 @@
                         >
                     </td>
                 </tr>
-                <?php if ($spielplan->get_pause($spiel_id) > 0) { ?>
+                <?php if ($spielplan->get_pause($spiel_id) > 0): ?>
                     <!-- Spielpause -->
                     <tr>
                         <td>
@@ -142,8 +142,8 @@
                         </td>
                         <td colspan="2"></td>
                     </tr>
-                <?php }// endif pause ?>
-            <?php }// end foreach spiele?>
+                <?php endif; ?>
+            <?php endforeach; ?>
         </table>
     </div>
     <!-- Formular für die Ergebniseintragung in den Centern erstellen -->

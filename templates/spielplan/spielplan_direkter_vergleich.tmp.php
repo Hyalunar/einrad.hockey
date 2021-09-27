@@ -23,7 +23,7 @@
 <div id="vergleichs_tabellen" style="display: none">
     <!-- Tabellen für den direkten Vergleich -->
     <h3 class="w3-text-secondary">Direkter Vergleich</h3>
-    <?php foreach ($spielplan->direkter_vergleich_tabellen as $direkter_vergleich) { ?>
+    <?php foreach ($spielplan->direkter_vergleich_tabellen as $direkter_vergleich): ?>
         <div class="w3-card-4 w3-responsive w3-section">
             <table class="w3-table w3-centered">
                 <tr class="w3-primary">
@@ -62,7 +62,7 @@
                         <br>Gegentore
                     </th>
                 </tr>
-                <?php foreach ($direkter_vergleich as $team_id => $ergebnis) { ?>
+                <?php foreach ($direkter_vergleich as $team_id => $ergebnis): ?>
                     <tr>
                         <td><?= $spielplan->platzierungstabelle[$team_id]['platz'] ?></td>
                         <td style="white-space: nowrap"><?= $spielplan->teamliste[$team_id]['teamname'] ?></td>
@@ -72,15 +72,15 @@
                         <td><?= $ergebnis['tore'] ?></td>
                         <td><?= $ergebnis['gegentore'] ?></td>
                     </tr>
-                <?php } // end foreach ?>
+                <?php endforeach; ?>
             </table>
         </div>
-    <?php }//end foreach ?>
+    <?php endforeach; ?>
     <!-- Tabellen für den direkten Vergleich -->
-    <?php if (!empty($spielplan->penalty_tabellen)){ ?>
+    <?php if (!empty($spielplan->penalty_tabellen)): ?>
         <h3 class="w3-text-secondary">Penalty Vergleich</h3>
-    <?php }//end if ?>
-    <?php foreach ($spielplan->penalty_tabellen as $penalty) { ?>
+    <?php endif; ?>
+    <?php foreach ($spielplan->penalty_tabellen as $penalty): ?>
         <div class="w3-card-4 w3-responsive w3-section">
             <table class="w3-table w3-centered">
                 <tr class="w3-primary">
@@ -120,7 +120,7 @@
                         Gegentore
                     </th>
                 </tr>
-                <?php foreach ($penalty as $team_id => $ergebnis) { ?>
+                <?php foreach ($penalty as $team_id => $ergebnis): ?>
                     <tr>
                         <td><?= $spielplan->platzierungstabelle[$team_id]['platz'] ?></td>
                         <td style="white-space: nowrap"><?= $spielplan->teamliste[$team_id]['teamname'] ?></td>
@@ -137,8 +137,8 @@
                             <?= $ergebnis['penalty_gegentore'] ?? "--" ?>
                         </td>
                     </tr>
-                <?php } // end foreach ?>
+                <?php endforeach; ?>
             </table>
         </div>
-    <?php }//end foreach ?>
+    <?php endforeach; ?>
 </div>

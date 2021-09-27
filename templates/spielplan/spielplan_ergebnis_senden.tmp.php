@@ -7,7 +7,7 @@
             <?= Html::icon('send') ?> In die Ligatabellen eintragen
         </button>
     </p>
-    <?php if ($spielplan->turnier->get_phase() == 'ergebnis') { ?>
+    <?php if ($spielplan->turnier->get_phase() == 'ergebnis'): ?>
         <p class="w3-text-green">
             <?= Html::icon('check_circle') ?>
             Dem Ligaausschuss liegt ein Turnierergebnis vor.
@@ -16,12 +16,12 @@
             <?= Html::icon('info') ?>
             Durch erneutes Übermitteln kann das Turnierergebnis korrigiert werden.
         </p>
-    <?php } //end if?>
+    <?php endif; ?>
 
-    <?php if ($spielplan->turnier->get_phase() != 'ergebnis') { ?>
+    <?php if ($spielplan->turnier->get_phase() != 'ergebnis'): ?>
         <p class="w3-text-grey">
             <?= Html::icon('info') ?>
             Dem Ligaausschuss liegt noch kein Turnierergebnis vor.
         </p>
-    <?php } // endif?>
+    <?php endif; ?>
 </form>
