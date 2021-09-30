@@ -175,9 +175,8 @@ class Archiv
     public static function get_uebersicht()
     {
         $sql = "
-            SELECT saisonname, archiv_turniere_liga.saison, turniere.anzahl as turnier_anzahl, teams.anzahl as teams_anzahl, teamname as meister
+            SELECT archiv_turniere_liga.saison, turniere.anzahl as turnier_anzahl, teams.anzahl as teams_anzahl, teamname as meister
             FROM archiv_turniere_liga
-            LEFT JOIN archiv_saisons ON archiv_saisons.saison_id = archiv_turniere_liga.saison
             LEFT JOIN (SELECT saison, count(*) as anzahl FROM `archiv_turniere_liga` GROUP BY saison) AS turniere ON archiv_turniere_liga.saison = turniere.saison
             LEFT JOIN (SELECT saison, count(*) as anzahl FROM `archiv_teams_liga` WHERE ligateam = 'Ja' GROUP BY saison) AS teams ON archiv_turniere_liga.saison = teams.saison
             LEFT JOIN (
@@ -274,20 +273,7 @@ class Archiv
         return $result;
     }
 
-    public static function get_saisondetails(int $saison)
-    {
-        $sql = "
-            SELECT saisonname 
-            FROM archiv_saisons
-            WHERE saison_id = ?
-        ";
-
-        $result = db::$archiv->query($sql, $saison)->esc()->fetch_one();
-
-        return $result;
-    }
-
-        /**
+     /**
      * Gibt die Platzierung eines Teams in der Rangtabelle zurück
      *
      * @param int $team_id
