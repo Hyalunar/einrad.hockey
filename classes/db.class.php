@@ -2,8 +2,8 @@
 
 class db
 {
-    public static null|dbWrapper $db;
-    public static null|dbWrapper $archiv;
+    public static null|ndbWrapper $db;
+    public static null|ndbWrapper $archiv;
 
     /**
      * Stellt die Verbindung zur Datenbank her
@@ -40,7 +40,7 @@ class db
                                       string $password = Env::PASSWORD,
                                       string $database = Env::ARCHIV_DATABASE): void
     {
-        self::$archiv = new dbWrapper($host, $user, $password, $database);
+        self::$archiv = new ndbWrapper($host, $user, $password, $database);
     }
 
     /**
