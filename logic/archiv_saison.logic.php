@@ -1,7 +1,7 @@
 <?php
 
 $saison = $_GET['saison'];
-$saisondetails = Archiv::get_saisondetails($saison);
+$saisondetails = Html::get_saison_string($saison);
 $turniere = Archiv::get_turniere($saison);
 
 // Meisterschaftstabelle am Ende der Saison
