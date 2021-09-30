@@ -34,10 +34,10 @@ include '../../templates/header.tmp.php';
         </thead>
     <?php foreach ($uebersicht as $saison) {?>
         <tr>
-            <td><?=Html::link('archiv_saison.php?saison='. $saison['saison'], Html::get_saison_string($saison['saison']), false)?></td>
-            <td><?=$saison['teams_anzahl']?></td>
-            <td><?=$saison['turnier_anzahl']?></td>
-            <td><?=$saison['meister'] ?? 'Kein Meister ermittelt'?></td>
+            <td><?= Html::link('archiv_saison.php?saison='. $saison->get_saison_id(), $saison->get_saison_string(), false) ?></td>
+            <td><?= $saison->get_anz_ligateams() ?></td>
+            <td><?= $saison->get_anz_ligaturniere() ?></td>
+            <td><?= $saison->get_meister() ?></td>
         </tr>
     <?php } ?>
     </table>

@@ -15,11 +15,34 @@ include '../../templates/header.tmp.php';
 ?>
 
 <!-- Archiv -->
-<h1 class="w3-text-primary">Archiv der Saison <?=$saisondetails?></h1>
+<h1 class="w3-text-primary">Archiv der Saison <?=$saison->get_saison_string()?></h1>
 
-<h2 class="w3-text-primary">Meisterschaftstabelle der Saison <?=$saisondetails?></h2>
+<h2 class="w3-text-primary">Turniere der Saison <?=$saison->get_saison_string()?></h2>
+<!-- Turnierliste -->
+<div class="w3-responsive w3-card">
+    <table class="w3-table w3-striped">
+        <thead class="w3-primary">
+            <tr>
+                <th><b>Datum</b></th>
+                <th><b>Ort</b></th>
+                <th><b>Art</b></th>
+                <th><b>Block</b></th>
+            </tr>
+        </thead>
+    <?php foreach ($turniere as $turnier) {?>
+        <tr>
+            <td><?=strftime("%a", strtotime($turnier['datum']))?>, <?=strftime("%d.%m.", strtotime($turnier['datum']))?></a></td>
+            <td><?=Html::link('archiv_turnier.php?turnier_id='. $turnier['turnier_id'], $turnier['ort'], false)?></td>
+            <td><?=$turnier['art'] == 'final' ? '--' : $turnier['art']?></td>
+            <td><?=$turnier['tblock'] == 'final' ? 'FINALE' : $turnier['tblock'] ?></td>
+        </tr>
+    <?php } ?>
+    </table>
+</div>
 
-<?php if ($saison >= 21) {?>
+<h2 class="w3-text-primary">Meisterschaftstabelle der Saison <?=$saison->get_saison_string()?></h2>
+
+<?php if ($saison->get_saison_id() >= 21) {?>
     <div class="w3-responsive w3-card">
         <table class="w3-table w3-striped">
             <thead class="w3-primary">
@@ -56,8 +79,8 @@ include '../../templates/header.tmp.php';
         <?php foreach ($meisterschafts_tabelle as $spalte){?>
             <tr>
                 <td class="<?=$platz_color[$spalte['platz']] ?? ''?>"><?=$spalte['platz'] ?? ''?></td>
-                <td class="w3-center"><?=Archiv::rang_to_block($spalte['platz'], $saison)?></td>
-                <td class="w3-center"><?=Archiv::rang_to_wertigkeit($spalte['platz'], $saison)?></td>
+                <td class="w3-center"><?=$saison->rang_to_block($spalte['platz'])?></td>
+                <td class="w3-center"><?=$saison->rang_to_wertigkeit($spalte['platz'])?></td>
                 <td style="white-space: nowrap"><?=$spalte['teamname']?></td>
                 <td><?=htmlspecialchars_decode($spalte['string'])?></td>
                 <td><?=$spalte['summe'] ?: 0?><?=$spalte['strafe_stern'] ?? ''?></a></td>
@@ -68,7 +91,7 @@ include '../../templates/header.tmp.php';
 <?php } ?>
 
 <?php if(isset($rang_tabelle)) { ?> 
-<h2 class="w3-text-primary">Rangtabelle der Saison <?=$saisondetails?></h2>
+<h2 class="w3-text-primary">Rangtabelle der Saison <?=$saison->get_saison_string()?></h2>
 <!-- Rangtabelle -->
 <div class="w3-responsive w3-card">
     <table class="w3-table w3-striped">
@@ -85,8 +108,8 @@ include '../../templates/header.tmp.php';
         <?php foreach ($rang_tabelle as $spalte){?>
             <tr>
                 <td><span class="w3-text-grey"><?=$spalte['rang']?></span></td>
-                <td class="w3-center"><?=Archiv::rang_to_block($spalte['rang'], $saison)?></td>
-                <td class="w3-center"><?=Archiv::rang_to_wertigkeit($spalte['rang'], $saison)?></td>
+                <td class="w3-center"><?=$saison->rang_to_block($spalte['rang'])?></td>
+                <td class="w3-center"><?=$saison->rang_to_wertigkeit($spalte['rang'])?></td>
                 <td style="white-space: nowrap"><?=$spalte['teamname']?></td>
                 <td><?=htmlspecialchars_decode($spalte['string'])?></td>
                 <td class="w3-center"><?=$spalte['avg'] ?: 0?></td>
@@ -95,28 +118,5 @@ include '../../templates/header.tmp.php';
     </table>
 </div>
 <?php } //end if?>
-
-<h2 class="w3-text-primary">Turniere der Saison <?=$saisondetails?></h2>
-<!-- Turnierliste -->
-<div class="w3-responsive w3-card">
-    <table class="w3-table w3-striped">
-        <thead class="w3-primary">
-            <tr>
-                <th><b>Datum</b></th>
-                <th><b>Ort</b></th>
-                <th><b>Art</b></th>
-                <th><b>Block</b></th>
-            </tr>
-        </thead>
-    <?php foreach ($turniere as $turnier) {?>
-        <tr>
-            <td><?=strftime("%a", strtotime($turnier['datum']))?>, <?=strftime("%d.%m.", strtotime($turnier['datum']))?></a></td>
-            <td><?=Html::link('archiv_turnier.php?turnier_id='. $turnier['turnier_id'], $turnier['ort'], false)?></td>
-            <td><?=$turnier['art'] == 'final' ? '--' : $turnier['art']?></td>
-            <td><?=$turnier['tblock'] == 'final' ? 'FINALE' : $turnier['tblock'] ?></td>
-        </tr>
-    <?php } ?>
-    </table>
-</div>
 
 <?php include '../../templates/footer.tmp.php';
