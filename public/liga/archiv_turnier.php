@@ -8,9 +8,6 @@ require_once '../../logic/archiv_turnier.logic.php';
 
 $counter = 1;
 
-db::debug($turnierdetails);
-db::debug($tabelle);
-
 /////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////LAYOUT///////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
@@ -19,8 +16,14 @@ Html::$content = 'Hier kann man die Ergebnisse und Tabellen seit der ersten Sais
 include '../../templates/header.tmp.php';
 ?>
 
+<!-- Zurück -->
+<br>
+<?=Html::link("archiv.php", "Zurück zum Archiv" , false, "reorder")?>
+<br>
+<?=Html::link("archiv_saison.php?saison=" . $turnier->get_saison() , "Zurück zur Saison " . $saison->get_saison_string() , false, "reorder")?>
+
 <!-- Archiv -->
-<h1 class="w3-text-primary">Ergebnis in <?=$turnierdetails['ort']?>, <?=strftime("%d.%m.%Y", strtotime($turnierdetails['datum']))?></h1>
+<h1 class="w3-text-primary"><?=$turnier->get_ort()?> (<?=$turnier->get_tblock()?>), <?=strftime("%d.%m.%Y", strtotime($turnier->get_datum()))?> (<?=strftime("%A", strtotime($turnier->get_datum()))?>)</h1>
 
 <h2 class="w3-text-primary">Teams</h2>
 <div class="w3-responsive w3-card">
@@ -37,12 +40,12 @@ include '../../templates/header.tmp.php';
         <tr>
             <td><?=$counter?></td>
             <td><?=$team['ligateam'] == 'Ja' ? $team['teamname'] : $team['teamname'] . '*'?></td>
-            <?php if ($turnierdetails['saison'] >= 21) { ?>
-                <td><?=Archiv::rang_to_wertigkeit($tabelle[$team['team_id']]['rang'] ?? NULL, $turnierdetails['saison'])?></td>
-                <td><?=Archiv::rang_to_block($tabelle[$team['team_id']]['rang'] ?? NULL, $turnierdetails['saison'])?></td>
+            <?php if ($turnier->get_saison() >= 21) { ?>
+                <td><?=$saison->rang_to_wertigkeit($tabelle[$team['team_id']]['rang'] ?? NULL)?></td>
+                <td><?=$saison->rang_to_block($tabelle[$team['team_id']]['rang'] ?? NULL)?></td>
             <?php } else { ?>
-                <td><?=Archiv::rang_to_wertigkeit($tabelle[$team['team_id']]['platz'] ?? NULL, $turnierdetails['saison'])?></td>
-                <td><?=Archiv::rang_to_block($tabelle[$team['team_id']]['platz'] ?? NULL, $turnierdetails['saison'])?></td>
+                <td><?=$saison->rang_to_wertigkeit($tabelle[$team['team_id']]['platz'] ?? NULL)?></td>
+                <td><?=$saison->rang_to_block($tabelle[$team['team_id']]['platz'] ?? NULL)?></td>
             <?php } ?>
         </tr>
     <?php $counter++; } ?>

@@ -14,10 +14,20 @@ Html::$content = 'Hier kann man die Ergebnisse und Tabellen seit der ersten Sais
 include '../../templates/header.tmp.php';
 ?>
 
+<!-- Zurück -->
+<br>
+<?=Html::link("archiv.php", "Zurück zum Archiv" , false, "reorder")?>
+
 <!-- Archiv -->
 <h1 class="w3-text-primary">Archiv der Saison <?=$saison->get_saison_string()?></h1>
 
-<h2 class="w3-text-primary">Turniere der Saison <?=$saison->get_saison_string()?></h2>
+<p>
+    <?=Html::link("archiv_saison.php?saison=" . $saison->get_saison_id() . "#turniere" , "Turnierliste" , false, "reorder")?><br>
+    <?=Html::link("archiv_saison.php?saison=" . $saison->get_saison_id() . "#meister" , "Meisterschaftstabelle" , false, "reorder")?><br>
+    <?=Html::link("archiv_saison.php?saison=" . $saison->get_saison_id() . "#rang" , "Rangtabelle" , false, "reorder")?>
+</p>
+
+<h2 id="turniere" class="w3-text-secondary">Turnierliste</h2>
 <!-- Turnierliste -->
 <div class="w3-responsive w3-card">
     <table class="w3-table w3-striped">
@@ -40,7 +50,7 @@ include '../../templates/header.tmp.php';
     </table>
 </div>
 
-<h2 class="w3-text-primary">Meisterschaftstabelle der Saison <?=$saison->get_saison_string()?></h2>
+<h2 id="meister" class="w3-text-secondary">Meisterschaftstabelle</h2>
 
 <?php if ($saison->get_saison_id() >= 21) {?>
     <div class="w3-responsive w3-card">
@@ -91,7 +101,7 @@ include '../../templates/header.tmp.php';
 <?php } ?>
 
 <?php if(isset($rang_tabelle)) { ?> 
-<h2 class="w3-text-primary">Rangtabelle der Saison <?=$saison->get_saison_string()?></h2>
+<h2 id="rang" class="w3-text-secondary">Rangtabelle</h2>
 <!-- Rangtabelle -->
 <div class="w3-responsive w3-card">
     <table class="w3-table w3-striped">
