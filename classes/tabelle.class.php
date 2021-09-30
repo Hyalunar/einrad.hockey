@@ -10,12 +10,12 @@ class Tabelle
 
     /**
      * Speichert die Erstellten Rangtabellen, damit diese nicht mehrfach erstellt werden müssen.
-     * @var array
      */
     public static array $rangtabellen = [];
 
     /**
      * Übergibt den Spieltag, bis zu welchem Ergebnisse eingetragen worden sind.
+     * Also den nächsten, nicht vollendeten, noch zu spielenden Spieltag.
      *
      * @param int $saison
      * @return int
@@ -23,13 +23,11 @@ class Tabelle
     public static function get_aktuellen_spieltag(int $saison = Config::SAISON): int
     {
         $sql = "
-                SELECT spieltag
+                SELECT max(spieltag) + 1 
                 FROM turniere_liga 
                 WHERE saison = ?
-                AND (art='I' OR art = 'II' OR art='III')
-                AND phase != 'ergebnis'
-                ORDER BY spieltag
-                LIMIT 1
+                AND (art = 'I' OR art = 'II' OR art = 'III')
+                AND phase = 'ergebnis'
                 ";
         return db::$db->query($sql, $saison)->fetch_one() ?? 1;
     }
@@ -41,7 +39,7 @@ class Tabelle
      * @param int $saison
      * @return bool
      */
-    public static function check_spieltag_live(int $spieltag, $saison = Config::SAISON): bool
+    public static function check_spieltag_live(int $spieltag, int $saison = Config::SAISON): bool
     {
         $sql = "
                 SELECT phase, count(phase)
@@ -176,7 +174,7 @@ class Tabelle
      * @param int $saison
      * @return array
      */
-    public static function get_all_ergebnisse($saison = Config::SAISON): array
+    public static function get_all_ergebnisse(int $saison = Config::SAISON): array
     {
         $sql = "
                 SELECT turniere_ergebnisse.*, teams_liga.teamname , teams_liga.ligateam
@@ -319,7 +317,7 @@ class Tabelle
         // Kumulierte Strafe mit der Summe der Turnierergebnisse des Teams verrechnen
         foreach ($return as $team_id => $team) {
             if (isset($team['strafe'])) {
-                $return[$team_id]['summe'] = round($return[$team_id]['summe'] * (1 - $team['strafe']));
+                $return[$team_id]['summe'] = round($team['summe'] * (1 - $team['strafe']));
             }
         }
 
@@ -333,7 +331,7 @@ class Tabelle
         $zeile_vorher['summe'] = 0;
         $zeile_vorher['max_einzel'] = 0;
         foreach ($return as $key => $zeile) {
-            $zeile['max_einzel'] = max($zeile['einzel_ergebnisse']);
+            $zeile['max_einzel'] = max($zeile['einzel_ergebnisse'] ?? [0]);
             if (
                 $zeile_vorher['summe'] === $zeile['summe']
                 && $zeile_vorher['max_einzel'] === $zeile['max_einzel']
@@ -376,10 +374,9 @@ class Tabelle
                 AND teams_liga.aktiv = 'Ja'
                 AND turniere_liga.art != 'final'
                 AND (
-                    (turniere_liga.spieltag <= ? 
-                    AND turniere_liga.saison = ? 
-                    OR (turniere_liga.saison = ? - 1)
-                    $ausnahme)
+                    (turniere_liga.spieltag <= ? AND turniere_liga.saison = ?)
+                    OR turniere_liga.saison = ? - 1
+                    $ausnahme
                     )
                 ORDER BY turniere_liga.saison DESC, turniere_liga.datum DESC";
 

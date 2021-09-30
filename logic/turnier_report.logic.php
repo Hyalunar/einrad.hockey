@@ -1,16 +1,20 @@
 <?php
 // Turnierobjekt erstellen
-$turnier_id = (int) @$_GET['turnier_id'];
+$turnier_id = (int)@$_GET['turnier_id'];
 $turnier = new Turnier ($turnier_id);
 
-if ($turnier->details['ausrichter'] == ($_SESSION['logins']['team']['id'] ?? '') || Helper::$ligacenter) {
-    $change_tbericht = true; // Berechtigung zum Verändern des Reports
-} else {
-    $change_tbericht = false;
-}
+// Berechtigung zum Verändern des Reports
+$change_tbericht = (
+    $turnier->details['ausrichter'] === ($_SESSION['logins']['team']['id'] ?? '')
+    || Helper::$ligacenter
+);
 
-if (strtotime($turnier->details['datum']) - time() < -3 * 24 * 60 * 60 && !Helper::$ligacenter) {
-    $change_tbericht = false; //Berechtigung zum Verändern des Reports widerrufen für Ausrichter, wenn das Turnier mehr als zwei Tage zurückliegt.
+// Berechtigung zum Verändern des Reports widerrufen für Ausrichter, wenn das Turnier mehr als zwei Tage zurückliegt.
+if (
+    strtotime($turnier->details['datum']) - time() < -3 * 24 * 60 * 60
+    && !Helper::$ligacenter
+) {
+    $change_tbericht = false;
     if ($turnier->details['ausrichter'] == ($_SESSION['logins']['team']['id'] ?? '')) {
         Html::notice("Das Turnier liegt bereits in der Vergangenheit. Bearbeiten des Turnierreports nur noch via den Ligaausschuss möglich.");
     }
@@ -21,14 +25,21 @@ $tbericht = new TurnierReport ($turnier_id);
 // Existiert das Turnier?
 if (empty($turnier->details)) {
     Html::error("Turnier wurde nicht gefunden");
-    header('Location: ../liga/turniere.php');
-    die();
+    Helper::reload('/liga/turniere.php');
 }
 
-if ($turnier->details['art'] == 'spass') {
+// Gibt es eine Leseberechtigung?
+if (
+    !Helper::$ligacenter && $turnier->get_liste($_SESSION['logins']['team']['id']) !== 'spiele'
+) {
+    Html::error("Der Turnierreport kann nur von teilnehmenden Teams eingesehen werden.");
+    Helper::reload('/liga/turnier_details.php?turnier_id=' . $turnier->id);
+}
+
+// Ist es ein Spass-Turnier?
+if ($turnier->details['art'] === 'spass') {
     Html::notice("Spaßturniere erfordern keinen Turnierreport.");
-    header('Location: ../liga/turnier_details.php?turnier_id=' . $turnier->id);
-    die();
+    Helper::reload('/liga/turnier_details.php?turnier_id=' . $turnier->id);
 }
 
 // Liste der Teams
@@ -37,23 +48,25 @@ $teams = $turnier->get_liste_spielplan();
 $kader_array = $turnier->get_kader_kontrolle();
 $ausbilder_liste = [];
 $spieler_liste = [];
-foreach ($kader_array as $team_id => $kader) { // Todo In Funktion
-    foreach ($kader as $spieler_id => $spieler) {
-        if ($spieler['schiri'] == 'Ausbilder/in') {
-            $ausbilder_liste[$spieler_id] = $spieler;
+
+// Todo In Funktion
+$alle_ausbilder = LigaLeitung::get_all('schiriausbilder');
+foreach ($kader_array as $team_id => $kader) {
+    foreach ($kader as $spieler) {
+        if (isset($alle_ausbilder[$spieler->id()])) {
+            $ausbilder_liste[$spieler->id()] = $spieler;
         }
-        $spieler_liste[$spieler_id] = $spieler;
+        $spieler_liste[$spieler->id()] = $spieler;
     }
 }
 
+$spieler_ausleihen = $tbericht->get_spieler_ausleihen();
 
 if ($change_tbericht) {
 
-    $spieler_ausleihen = $tbericht->get_spieler_ausleihen();
-
     // Spielerausleihe löschen
     foreach ($spieler_ausleihen as $ausleihe_id => $ausleihe) {
-        if (isset($_POST['del_ausleihe_' . $ausleihe_id])) {
+        if (isset($_POST[('del_ausleihe_' . $ausleihe_id)])) { //TODO Array bauen
             $tbericht->delete_spieler_ausleihe($ausleihe_id);
             Html::info("Spielerausleihe wurde entfernt.");
             header('Location:' . db::escape($_SERVER['PHP_SELF']) . '?turnier_id=' . $turnier_id);
@@ -83,7 +96,7 @@ if ($change_tbericht) {
 
     // Zeitstrafe löschen
     foreach ($zeitstrafen as $zeitstrafe_id => $zeitstrafe) {
-        if (isset($_POST['del_zeitstrafe_' . $zeitstrafe_id])) {
+        if (isset($_POST[('del_zeitstrafe_' . $zeitstrafe_id)])) {
             $tbericht->delete_zeitstrafe($zeitstrafe_id);
             Html::info("Zeitstrafe wurde entfernt.");
             header('Location:' . db::escape($_SERVER['PHP_SELF']) . '?turnier_id=' . $turnier_id);

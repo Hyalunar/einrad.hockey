@@ -54,6 +54,47 @@ if (isset($_POST['reaktivieren'])){
     Html::error("Teamname wurde nicht gefunden. Team wurde nicht deaktiviert.");
 }
 
+if (isset($_POST['gitpull'])){
+
+    if (Env::IS_LOCALHOST ?? true) {
+
+        Html::error("Update im Localhost nicht sinnvoll, da eventuelle Änderungen gelöscht werden würden.");
+
+    } else {
+
+        $hash = LigaLeitung::get_details($_SESSION['logins']['la']['login'])['passwort'];
+        $password = $_POST['password'];
+
+        if (password_verify($password, $hash)) {
+
+            $output = shell_exec("sh " . Env::BASE_PATH . "/system/shell/gitpull.sh");
+            Helper::log("git.log", $output);
+            db::debug($output);
+            Helper::reload();
+
+        } else {
+
+            Html::error("Falsches Passwort.");
+
+        }
+
+    }
+}
+
+if (isset($_POST['gitlogs'])){
+
+    $output = shell_exec("sh " . Env::BASE_PATH . "/system/shell/gitlog.sh");
+    db::debug($output);
+
+}
+
+if (isset($_POST['gitstatus'])){
+
+    $output = shell_exec("sh " . Env::BASE_PATH . "/system/shell/gitstatus.sh");
+    db::debug($output);
+
+}
+
 //Ligabot ausführen
 if (isset($_POST['ligabot'])){
     LigaBot::liga_bot();
