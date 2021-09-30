@@ -18,7 +18,7 @@ include '../../templates/header.tmp.php';
 <br>
 <?=Html::link("archiv.php", "Zurück zum Archiv" , false, "reorder")?>
 
-<?php if ($saison->get_saison_id() == 25): ?>
+<?php if ($saison->get_saison_id() == 25 || $saison->get_saison_id() == 26): ?>
     <div class="w3-card w3-panel w3-leftbar w3-border-yellow w3-pale-yellow">
         <div class="w3-section">
         Aufgrund der Corona-Pandemie konnte keine Meisterschaft auftragen und kein Meister ermittelt werden.
