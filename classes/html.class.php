@@ -213,7 +213,7 @@ class Html
         if ($saison > 25) {
             $saison_jahr = 1994 + $saison;
             $saison_jahr_next = $saison_jahr + 1;
-            return substr($saison_jahr, -2) . "/" . substr($saison_jahr_next, -2);
+            return $saison_jahr . "/" . $saison_jahr_next;
         }
         return (string) (1995 + $saison);
     }
