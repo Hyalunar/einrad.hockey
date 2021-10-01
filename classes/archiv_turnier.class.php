@@ -44,6 +44,14 @@ class Archiv_Turnier {
     }
 
     /**
+     * Zeigt das Turnier
+     */
+    public function show()
+    {
+        include '../../templates/ergebnis.tmp.php';
+    }
+
+    /**
      * Setzt die Turnierergebnisse
      * 
      * @return array
