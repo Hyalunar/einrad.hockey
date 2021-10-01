@@ -35,8 +35,26 @@ include '../../templates/header.tmp.php';
     <?=Html::link("archiv_saison.php?saison=" . $saison->get_saison_id() . "#rang" , "Rangtabelle" , false, "reorder")?>
 </p>
 
-<h2 id="turniere" class="w3-text-secondary">Turnierliste</h2>
+<?php 
+    if (!empty($saison->get_afinale())):
+        $saison->get_afinale()->show();
+    endif;
+    if (!empty($saison->get_quali())):
+        $saison->get_quali()->show();
+    endif;
+    if (!empty($saison->get_bfinale())):
+        $saison->get_bfinale()->show();
+    endif;
+    if (!empty($saison->get_cfinale())):
+        $saison->get_cfinale()->show();
+    endif;
+    if (!empty($saison->get_dfinale())):
+        $saison->get_dfinale()->show();
+    endif;
+?>
+
 <!-- Turnierliste -->
+<h2 id="turniere" class="w3-text-secondary">Turnierliste</h2>
 <div class="w3-responsive w3-card">
     <table class="w3-table w3-striped">
         <thead class="w3-primary">

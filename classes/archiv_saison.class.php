@@ -7,7 +7,12 @@ class Archiv_Saison {
     
     private int $anz_ligateams;
     private int $anz_ligaturniere;
-    private ?string $meister;
+    private string $meister;
+    private ?Archiv_Turnier $afinale;
+    private ?Archiv_Turnier $quali;
+    private ?Archiv_Turnier $bfinale;
+    private ?Archiv_Turnier $cfinale;
+    private ?Archiv_Turnier $dfinale;
 
     public function __construct(int $saison_id)
     {
@@ -17,7 +22,11 @@ class Archiv_Saison {
         $this->anz_ligateams = $this->set_anz_ligateams();
         $this->anz_ligaturniere = $this->set_anz_ligaturniere();
         $this->meister = $this->set_meister();
-
+        $this->afinale = $this->set_afinale();
+        $this->quali = $this->set_quali();
+        $this->bfinale = $this->set_bfinale();
+        $this->cfinale = $this->set_cfinale();
+        $this->dfinale = $this->set_dfinale();
     }
         
     /**
@@ -59,9 +68,9 @@ class Archiv_Saison {
     /**
      * Setzt den Meister
      * 
-     * @return null|string
+     * @return string
      */
-    public function set_meister(): null|string
+    public function set_meister(): string
     {
         $sql = "
             SELECT archiv_turniere_ergebnisse.team_id
@@ -75,6 +84,147 @@ class Archiv_Saison {
         $team_id = db::$archiv->query($sql, $this->saison_id)->esc()->fetch_one();
 
         return Team::id_to_name($team_id) ?? 'Kein Meister ermittelt';
+    }
+
+    /**
+     * Setzt das AFINALE
+     * 
+     * @return null|Archiv_Turnier
+     */
+    public function set_afinale(): null|Archiv_Turnier
+    {    
+        $sql = "
+            SELECT turnier_id
+            FROM archiv_turniere_liga
+            WHERE tblock = 'AFINALE'
+            AND saison = ?
+            ";
+        $result = db::$archiv->query($sql, $this->saison_id)->esc()->fetch_one();
+        
+        if (empty($result)) {
+            return null;
+        }
+
+        $afinale = Archiv_Turnier::get($result);
+        if ($afinale->get_saison() == 27) {
+            $afinale->set_tname('Finale der Deutschen Einradhockeyliga');
+        } else {
+            $afinale->set_tname('Abschlussturnier');
+        }
+        
+        return $afinale;
+    }
+
+    /**
+     * Setzt das QUALI
+     * 
+     * @return null|Archiv_Turnier
+     */
+    public function set_quali(): null|Archiv_Turnier
+    {
+        $sql = "
+            SELECT turnier_id
+            FROM archiv_turniere_liga
+            WHERE tblock = 'QUALI'
+            AND saison = ?
+            ";
+        $result = db::$archiv->query($sql, $this->saison_id)->esc()->fetch_one();
+        
+        if (empty($result)) {
+            return null;
+        }
+        
+        $quali = Archiv_Turnier::get($result);
+        $quali->set_tname('Qualifikationsturnier');
+        
+        return $quali;
+    }
+
+    /**
+     * Setzt das BFINALE
+     * 
+     * @return null|Archiv_Turnier
+     */
+    public function set_bfinale(): null|Archiv_Turnier
+    {
+        $sql = "
+            SELECT turnier_id
+            FROM archiv_turniere_liga
+            WHERE tblock = 'BFINALE'
+            AND saison = ?
+            ";
+        $result = db::$archiv->query($sql, $this->saison_id)->esc()->fetch_one();
+        
+        if (empty($result)) {
+            return null;
+        }
+        
+        $bfinale = Archiv_Turnier::get($result);
+        if ($bfinale->get_saison() == 27) {
+            $bfinale->set_tname('B-Finale der Deutschen Einradhockeyliga');
+        } else {
+            $bfinale->set_tname('B-Meisterschaft');
+        }
+        
+        return $bfinale;
+    }
+
+    /**
+     * Setzt das CFINALE
+     * 
+     * @return null|Archiv_Turnier
+     */
+    public function set_cfinale(): null|Archiv_Turnier
+    {
+        $sql = "
+            SELECT turnier_id
+            FROM archiv_turniere_liga
+            WHERE tblock = 'CFINALE'
+            AND saison = ?
+            ";
+        $result = db::$archiv->query($sql, $this->saison_id)->esc()->fetch_one();
+        
+        if (empty($result)) {
+            return null;
+        }
+        
+        $cfinale = Archiv_Turnier::get($result);
+        if ($cfinale->get_saison() == 27) {
+            $cfinale->set_tname('C-Finale der Deutschen Einradhockeyliga');
+        } else {
+            $cfinale->set_tname('C-Meisterschaft');
+        }
+        
+        return $cfinale;
+    }
+
+    /**
+     * Setzt das DFINALE
+     * 
+     * @return null|Archiv_Turnier
+     */
+    public function set_dfinale(): null|Archiv_Turnier
+    {
+        $sql = "
+            SELECT turnier_id
+            FROM archiv_turniere_liga
+            WHERE tblock = 'DFINALE'
+            AND saison = ?
+            ";
+        $result = db::$archiv->query($sql, $this->saison_id)->esc()->fetch_one();
+        
+        if (empty($result)) {
+            return null;
+        }
+        
+        $dfinale = Archiv_Turnier::get($result);
+        if ($dfinale->get_saison() == 27) {
+            $dfinale->set_tname('Saisonschlussturnier');
+        } else {
+            $dfinale->set_tname('D-Meisterschaft');
+        }
+        
+        return $dfinale;
     }
 
     /**
@@ -135,6 +285,56 @@ class Archiv_Saison {
     public function get_meister(): string
     {
         return $this->meister;
+    }
+
+    /**
+     * Gibt die A-Meisterschaft
+     * 
+     * @return null|Archiv_Turnier
+     */
+    public function get_afinale(): null|Archiv_Turnier
+    {
+        return $this->afinale;
+    }
+
+    /**
+     * Gibt die Qualifikation
+     * 
+     * @return null|Archiv_Turnier
+     */
+    public function get_quali(): null|Archiv_Turnier
+    {
+        return $this->quali;
+    }
+
+    /**
+     * Gibt die B-Meisterschaft
+     * 
+     * @return null|Archiv_Turnier
+     */
+    public function get_bfinale(): null|Archiv_Turnier
+    {
+        return $this->bfinale;
+    }
+
+    /**
+     * Gibt die C-Meisterschaft
+     * 
+     * @return null|Archiv_Turnier
+     */
+    public function get_cfinale(): null|Archiv_Turnier
+    {
+        return $this->cfinale;
+    }
+
+    /**
+     * Gibt die D-Meisterschaft
+     * 
+     * @return null|Archiv_Turnier
+     */
+    public function get_dfinale(): null|Archiv_Turnier
+    {
+        return $this->dfinale;
     }
     
     /**

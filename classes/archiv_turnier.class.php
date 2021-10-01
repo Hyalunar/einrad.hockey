@@ -16,9 +16,9 @@ class Archiv_Turnier {
     private string $ort;
     private string $format;
 
-    private array $ergebnisse;
-    private array $teams;
-    private array $spiele;
+    private ?array $ergebnisse;
+    private ?array $teams;
+    private ?array $spiele;
         
     
     public function __construct()
@@ -52,12 +52,20 @@ class Archiv_Turnier {
     }
 
     /**
+     * Setzt den Turniernamen
+     */
+    public function set_tname(string $tname): void
+    {
+        $this->tname = $tname;
+    }
+
+    /**
      * Setzt die Turnierergebnisse
      * 
-     * @return array
+     * @return null|array
      */
     
-    public function set_ergebnisse(): array
+    public function set_ergebnisse(): null|array
     {
         $sql = "
             SELECT * 
