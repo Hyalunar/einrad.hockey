@@ -23,9 +23,13 @@ include '../../templates/header.tmp.php';
 <?=Html::link("archiv_turnierliste.php?saison=" . $turnier->get_saison() , "Zurück zur Turnierliste der Saison " . $saison->get_saison_string() , false, "arrow_back")?>
 
 <!-- Archiv -->
-<h1 class="w3-text-primary"><?=$turnier->get_ort()?> (<?=$turnier->get_tblock()?>), <?=strftime("%d.%m.%Y", strtotime($turnier->get_datum()))?> (<?=strftime("%A", strtotime($turnier->get_datum()))?>)</h1>
+<h1> 
+    <?=strftime("%d.%m.%Y", strtotime($turnier->get_datum()))?>
+    <span class="w3-text-primary"><?=$turnier->get_ort()?></span>
+    (<?=$turnier->get_tblock()?>) 
+</h1>
 
-<h2 class="w3-text-primary">Teams</h2>
+<h3 class="w3-text-secondary">Teams</h3>
 <div class="w3-responsive w3-card">
     <table class="w3-table w3-striped">
         <thead class="w3-primary">
@@ -53,7 +57,7 @@ include '../../templates/header.tmp.php';
 </div>
 <p class="w3-text-grey"><?=$nlteams ? '* Nichtligateam' : ''?></p>
 
-<h2 class="w3-text-primary">Spiele</h2>
+<h3 class="w3-text-secondary">Spiele</h3>
 <?php if(!empty($spiele)) { ?>
 <div class="w3-responsive w3-card">
     <table class="w3-table w3-striped">
@@ -90,7 +94,7 @@ include '../../templates/header.tmp.php';
 </div>
 <?php } ?>
 
-<h2 class="w3-text-primary">Turnierergebnis</h2>
+<h3 class="w3-text-secondary">Turnierergebnis</h3>
 <div class="w3-responsive w3-card">
     <table class="w3-table w3-striped">
         <thead class="w3-primary">
