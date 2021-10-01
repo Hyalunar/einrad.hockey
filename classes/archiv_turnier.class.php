@@ -2,19 +2,19 @@
 
 class Archiv_Turnier {
     
-    private int $turnier_id;
-    private int $saison;
-    private int $spieltag;
-    private string $datum;
-    private int $plaetze;
-    private string $tblock;
-    private string $art;
+    public int $turnier_id;
+    private ?int $saison;
+    private ?int $spieltag;
+    private ?string $datum;
+    private ?int $plaetze;
+    private ?string $tblock;
+    private ?string $art;
     private ?string $tname;
-    private string $hallenname;
-    private string $startzeit;
-    private string $ausrichter;
-    private string $ort;
-    private string $format;
+    private ?string $hallenname;
+    private ?string $startzeit;
+    private ?string $ausrichter;
+    private ?string $ort;
+    private ?string $format;
 
     private ?array $ergebnisse;
     private ?array $teams;

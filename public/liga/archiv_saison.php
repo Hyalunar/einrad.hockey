@@ -4,7 +4,20 @@
 /////////////////////////////////////////////////////////////////////////////
 require_once '../../init.php';
 require_once '../../logic/archiv.logic.php';
-require_once '../../logic/archiv_saison.logic.php';
+
+$saison_id = $_GET['saison'];
+$saison = new Archiv_Saison($saison_id);
+
+// Meisterschaftstabelle am Ende der Saison
+$meisterschafts_tabelle = Tabelle::get_meisterschafts_tabelle(99, $saison->get_saison_id(), FALSE);
+
+// Da die Rangtabelle erst mit der Saison 2016 (ID 21) eingeführt wurde, wird diese vorher nicht ausgegeben
+if ($saison->get_saison_id() >= 21) {
+    // Rangtabelle am Ende der Saison
+    $rang_tabelle = Tabelle::get_rang_tabelle(99, $saison->get_saison_id(), FALSE);
+} else {
+    $rang_tabelle;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////LAYOUT///////////////////////////////////
@@ -16,7 +29,7 @@ include '../../templates/header.tmp.php';
 
 <!-- Zurück -->
 <br>
-<?=Html::link("archiv.php", "Zurück zum Archiv" , false, "reorder")?>
+<?=Html::link("archiv.php", "Zurück zum Archiv" , false, "arrow_back")?>
 
 <?php if ($saison->get_saison_id() == 25 || $saison->get_saison_id() == 26): ?>
     <div class="w3-card w3-panel w3-leftbar w3-border-yellow w3-pale-yellow">
@@ -30,7 +43,7 @@ include '../../templates/header.tmp.php';
 <h1 class="w3-text-primary">Archiv der Saison <?=$saison->get_saison_string()?></h1>
 
 <p>
-    <?=Html::link("archiv_saison.php?saison=" . $saison->get_saison_id() . "#turniere" , "Turnierliste" , false, "reorder")?><br>
+    <?=Html::link("archiv_turnierliste.php?saison=" . $saison->get_saison_id(), "Alle Turnierdetails" , false, "reorder")?><br>
     <?=Html::link("archiv_saison.php?saison=" . $saison->get_saison_id() . "#meister" , "Meisterschaftstabelle" , false, "reorder")?><br>
     <?=Html::link("archiv_saison.php?saison=" . $saison->get_saison_id() . "#rang" , "Rangtabelle" , false, "reorder")?>
 </p>
@@ -52,29 +65,6 @@ include '../../templates/header.tmp.php';
         $saison->get_dfinale()->show();
     endif;
 ?>
-
-<!-- Turnierliste -->
-<h2 id="turniere" class="w3-text-secondary">Turnierliste</h2>
-<div class="w3-responsive w3-card">
-    <table class="w3-table w3-striped">
-        <thead class="w3-primary">
-            <tr>
-                <th><b>Datum</b></th>
-                <th><b>Ort</b></th>
-                <th><b>Art</b></th>
-                <th><b>Block</b></th>
-            </tr>
-        </thead>
-    <?php foreach ($turniere as $turnier) {?>
-        <tr>
-            <td><?=strftime("%a", strtotime($turnier['datum']))?>, <?=strftime("%d.%m.", strtotime($turnier['datum']))?></a></td>
-            <td><?=Html::link('archiv_turnier.php?turnier_id='. $turnier['turnier_id'], $turnier['ort'], false)?></td>
-            <td><?=$turnier['art'] == 'final' ? '--' : $turnier['art']?></td>
-            <td><?=$turnier['tblock'] == 'final' ? 'FINALE' : $turnier['tblock'] ?></td>
-        </tr>
-    <?php } ?>
-    </table>
-</div>
 
 <h2 id="meister" class="w3-text-secondary">Meisterschaftstabelle</h2>
 

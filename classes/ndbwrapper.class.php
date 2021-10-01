@@ -97,7 +97,9 @@ class ndbwrapper
 
     public function fetch_objects(string $class, ?String $key = NULL, array $constructor_args = []): array
     {
-        while ($object = $this->stmt->fetchObject($class, $constructor_args)) {
+        $safe_stmt = $this->stmt;
+        
+        while ($object = $safe_stmt->fetchObject($class, $constructor_args)) {
             is_null($key) ? $objects[] = $object : $objects[$object->$key] = $object;
         }
         return $objects ?? [];

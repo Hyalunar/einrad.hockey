@@ -18,9 +18,9 @@ include '../../templates/header.tmp.php';
 
 <!-- Zurück -->
 <br>
-<?=Html::link("archiv.php", "Zurück zum Archiv" , false, "reorder")?>
-<br>
-<?=Html::link("archiv_saison.php?saison=" . $turnier->get_saison() , "Zurück zur Saison " . $saison->get_saison_string() , false, "reorder")?>
+<?=Html::link("archiv.php", "Zurück zum Archiv" , false, "arrow_back")?><br>
+<?=Html::link("archiv_saison.php?saison=" . $turnier->get_saison() , "Zurück zur Saison " . $saison->get_saison_string() , false, "arrow_back")?><br>
+<?=Html::link("archiv_turnierliste.php?saison=" . $turnier->get_saison() , "Zurück zur Turnierliste der Saison " . $saison->get_saison_string() , false, "arrow_back")?>
 
 <!-- Archiv -->
 <h1 class="w3-text-primary"><?=$turnier->get_ort()?> (<?=$turnier->get_tblock()?>), <?=strftime("%d.%m.%Y", strtotime($turnier->get_datum()))?> (<?=strftime("%A", strtotime($turnier->get_datum()))?>)</h1>

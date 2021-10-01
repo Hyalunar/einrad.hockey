@@ -341,21 +341,42 @@ class Archiv_Saison {
      * Gibt eine Liste der LIGATURNIERE der Saison zurück
      * @param int $saison
      * 
-     * @return array
+     * @return Archiv_Turniere[]
      */
-    
     public function get_liste_ligaturniere(): array
     {
         $sql = "
-            SELECT archiv_turniere_liga.turnier_id, datum, ort, art, tblock
+            SELECT *
             FROM archiv_turniere_liga
             LEFT JOIN archiv_turniere_details ON archiv_turniere_details.turnier_id = archiv_turniere_liga.turnier_id
             WHERE saison = ?
             AND art != 'spass'
+            AND art != 'final'
             ORDER BY datum ASC
         ";
 
-        $result = db::$archiv->query($sql, $this->saison_id)->esc()->fetch();
+        return db::$archiv->query($sql, $this->saison_id)->fetch_objects('Archiv_Turnier', key: 'turnier_id');
+    }
+
+    /**
+     * Gibt eine Liste der ABSCHLUSSTURNIERE der Saison zurück
+     * @param int $saison
+     * 
+     * @return Archiv_Turniere[]
+     */
+    
+    public function get_liste_abschlussturniere(): array
+    {
+        $sql = "
+            SELECT *
+            FROM archiv_turniere_liga
+            LEFT JOIN archiv_turniere_details ON archiv_turniere_details.turnier_id = archiv_turniere_liga.turnier_id
+            WHERE saison = ?
+            AND art = 'final'
+            ORDER BY FIELD(tblock, 'AFINALE', 'QUALI', 'BFINALE', 'CFINALE', 'DFINALE');
+        ";
+
+        $result = db::$archiv->query($sql, $this->saison_id)->fetch_objects('Archiv_Turnier', key: 'turnier_id');
 
         return $result;
     }
