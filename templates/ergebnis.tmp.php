@@ -9,7 +9,7 @@
             <h3>
                 <span><?= date("d.m.Y", strtotime($this->datum)) ?></span>
                 <span class="w3-text-primary"><?= $this->ort ?></span>
-                <span><?= $this->tblock ?></span>
+                <span>(<?= $this->tblock ?>)</span>
             </h3>
         <?php endif; ?>
     <div class="w3-responsive w3-card-4">   
