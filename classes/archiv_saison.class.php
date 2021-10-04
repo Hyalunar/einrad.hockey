@@ -7,7 +7,7 @@ class Archiv_Saison {
     
     private int $anz_ligateams;
     private int $anz_ligaturniere;
-    private ?int $meister;
+    private ?string $meister;
     private ?int $afinale;
     private ?int $quali;
     private ?int $bfinale;
@@ -70,9 +70,9 @@ class Archiv_Saison {
     /**
      * Setzt den Meister
      * 
-     * @return int|null
+     * @return string|null
      */
-    public function set_meister(): int|null
+    public function set_meister(): string|null
     {
         $sql = "
             SELECT archiv_turniere_ergebnisse.team_id
@@ -85,7 +85,13 @@ class Archiv_Saison {
         
         $team_id = db::$archiv->query($sql, $this->saison_id)->esc()->fetch_one();
 
-        return $team_id;
+        if (empty($team_id)) {
+            return 'Kein Meister ermittelt';
+        }
+
+        $teamname = Archiv_Team::get($team_id, $this->saison_id)->get_teamname();
+
+        return $teamname;
     }
 
     /**
