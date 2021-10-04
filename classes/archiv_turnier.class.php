@@ -26,6 +26,7 @@ class Archiv_Turnier {
         $this->ergebnisse = $this->set_ergebnisse();
         $this->teams = $this->set_teams();
         $this->spiele = $this->set_spiele();
+        $this->tname = $this->set_tname();
     }
 
     /**
@@ -53,10 +54,47 @@ class Archiv_Turnier {
 
     /**
      * Setzt den Turniernamen
+     * 
+     * @return string
      */
-    public function set_tname(string $tname): void
+    public function set_tname(): string
     {
-        $this->tname = $tname;
+        
+        switch ($this->tblock) {
+            case 'AFINALE':
+                if ($this->saison == 27) {
+                    $return = 'Finale der Deutschen Einradhockeyliga';
+                } else {
+                    $return = 'Abschlussturnier';
+                }
+                break;
+            case 'BFINALE':
+                if ($this->saison == 27) {
+                    $return = 'B-Finale der Deutschen Einradhockeyliga';
+                } else {
+                    $return = 'B-Meisterschaft';
+                }
+                break;
+            case 'CFINALE':
+                if ($this->saison == 27) {
+                    $return = 'C-Finale der Deutschen Einradhockeyliga';
+                } else {
+                    $return = 'C-Meisterschaft';
+                }
+                break;
+            case 'DFINALE':
+                if ($this->saison == 27) {
+                    $return = 'Saisonschlussturnier';
+                } else {
+                    $return = 'D-Meisterschaft';
+                }
+                break;
+            case 'QUALI':
+                $return = 'Qualifikationsturnier';
+                break;
+        }
+        
+        return $return;
     }
 
     /**
@@ -68,12 +106,13 @@ class Archiv_Turnier {
     public function set_ergebnisse(): null|array
     {
         $sql = "
-            SELECT * 
-            FROM archiv_turniere_ergebnisse
-            LEFT JOIN archiv_teams_liga ON archiv_teams_liga.team_id = archiv_turniere_ergebnisse.team_id
-            WHERE turnier_id = ?
+            SELECT archiv_turniere_liga.turnier_id, archiv_teams_liga.team_id, archiv_teams_liga.teamname, archiv_teams_liga.ligateam, archiv_turniere_ergebnisse.ergebnis, archiv_turniere_ergebnisse.platz
+            FROM archiv_turniere_liga
+            LEFT JOIN archiv_turniere_ergebnisse ON archiv_turniere_liga.turnier_id = archiv_turniere_ergebnisse.turnier_id
+            LEFT JOIN archiv_teams_liga ON archiv_turniere_liga.saison = archiv_teams_liga.saison AND archiv_turniere_ergebnisse.team_id = archiv_teams_liga.team_id
+            WHERE archiv_turniere_liga.turnier_id = ?
             ORDER BY platz ASC
-            ";
+        ";
 
         $ergebnisse = db::$archiv->query($sql, $this->turnier_id)->esc()->fetch();
 
@@ -88,14 +127,20 @@ class Archiv_Turnier {
     public function set_teams(): array
     {
         $sql = "
-            SELECT * 
-            FROM archiv_turniere_ergebnisse
-            LEFT JOIN archiv_teams_liga ON archiv_teams_liga.team_id = archiv_turniere_ergebnisse.team_id
-            WHERE turnier_id = ?
+            SELECT archiv_turniere_liga.turnier_id, archiv_teams_liga.team_id, archiv_teams_liga.teamname, archiv_teams_liga.ligateam
+            FROM archiv_turniere_liga
+            LEFT JOIN archiv_turniere_ergebnisse ON archiv_turniere_liga.turnier_id = archiv_turniere_ergebnisse.turnier_id
+            LEFT JOIN archiv_teams_liga ON archiv_turniere_liga.saison = archiv_teams_liga.saison AND archiv_turniere_ergebnisse.team_id = archiv_teams_liga.team_id
+            WHERE archiv_turniere_liga.turnier_id = ?
         ";
 
-        $teams = db::$archiv->query($sql, $this->turnier_id)->esc()->fetch();
+        $result = db::$archiv->query($sql, $this->turnier_id)->esc()->fetch();
 
+        $teams = array();
+        foreach ($result as $team) {
+            $teams[$team['team_id']] = $team;
+        }
+        
         return $teams;
     }
 

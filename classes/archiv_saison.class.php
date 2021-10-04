@@ -100,7 +100,7 @@ class Archiv_Saison {
             AND saison = ?
             ";
         $result = db::$archiv->query($sql, $this->saison_id)->esc()->fetch_one();
-        
+
         if (empty($result)) {
             return null;
         }

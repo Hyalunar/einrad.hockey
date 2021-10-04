@@ -8,6 +8,8 @@ require_once '../../logic/archiv_turnier.logic.php';
 
 $counter = 1;
 
+db::debug($turnier->get_teams());
+
 /////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////LAYOUT///////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
@@ -73,8 +75,8 @@ include '../../templates/header.tmp.php';
     <?php foreach ($spiele as $spiel) {?>
         <tr>
             <td><?=$spiel['spiel_id']?></td>
-            <td><?=$spiel['team_a']?></td>
-            <td><?=$spiel['team_b']?></td>
+            <td><?=$teams[$spiel['team_id_a']]['teamname']?></td>
+            <td><?=$teams[$spiel['team_id_b']]['teamname']?></td>
             <td class="w3-right-align"><?=$spiel['tore_a']?></td>
             <td class="w3-center">:</td>
             <td class="w3-right-left"><?=$spiel['tore_b']?></td>
