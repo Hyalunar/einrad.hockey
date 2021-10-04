@@ -50,19 +50,19 @@ include '../../templates/header.tmp.php';
 
 <?php 
     if (!empty($saison->get_afinale())):
-        $saison->get_afinale()->show();
+        Archiv_Turnier::get($saison->get_afinale())->show();
     endif;
     if (!empty($saison->get_quali())):
-        $saison->get_quali()->show();
+        Archiv_Turnier::get($saison->get_quali())->show();
     endif;
     if (!empty($saison->get_bfinale())):
-        $saison->get_bfinale()->show();
+        Archiv_Turnier::get($saison->get_bfinale())->show();
     endif;
     if (!empty($saison->get_cfinale())):
-        $saison->get_cfinale()->show();
+        Archiv_Turnier::get($saison->get_cfinale())->show();
     endif;
     if (!empty($saison->get_dfinale())):
-        $saison->get_dfinale()->show();
+        Archiv_Turnier::get($saison->get_dfinale())->show();
     endif;
 ?>
 

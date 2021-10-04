@@ -91,7 +91,8 @@ class Archiv_Turnier {
                 break;
             case 'QUALI':
                 $return = 'Qualifikationsturnier';
-                break;
+            default:
+                $return = $this->tname;
         }
         
         return $return;

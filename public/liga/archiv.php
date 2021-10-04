@@ -37,7 +37,7 @@ include '../../templates/header.tmp.php';
             <td><?= Html::link('archiv_saison.php?saison='. $saison->get_saison_id(), $saison->get_saison_string(), false) ?></td>
             <td><?= $saison->get_anz_ligateams() ?></td>
             <td><?= $saison->get_anz_ligaturniere() ?></td>
-            <td><?= $saison->get_meister() ?></td>
+            <td><?= $saison->get_meister() ?? 'Kein Meister ermittelt' ?></td>
         </tr>
     <?php } ?>
     </table>
