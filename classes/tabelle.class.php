@@ -253,7 +253,7 @@ class Tabelle
                         $return[$team_id]['string'] .= "+" . Html::link("ergebnisse.php#" . $eintrag['turnier_id'], $eintrag['ergebnis']);
                     } else {
                         if (isset($eintrag['turnier_id'])) {
-                            $return[$team_id]['string'] .= "+" . Html::link("archiv_turnier.php?turnier_id=" . $eintrag['turnier_id'], $eintrag['ergebnis']);
+                            $return[$team_id]['string'] .= "+" . Html::link("turnier.php?turnier_id=" . $eintrag['turnier_id'], $eintrag['ergebnis']);
                         } else {
                             $return[$team_id]['string'] .= '';
                         }
@@ -415,7 +415,7 @@ class Tabelle
             if ($aktuell) {
                 $link = "ergebnisse.php?saison=" . $eintrag['saison'] . "#" . $eintrag['turnier_id'];
             } else {
-                $link = "archiv_turnier.php?turnier_id=" . $eintrag['turnier_id'];
+                $link = "turnier.php?turnier_id=" . $eintrag['turnier_id'];
             }
             
             //Initialisierung

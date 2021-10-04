@@ -100,7 +100,7 @@ class Nav
         return [
             [Env::BASE_URL . "/liga/ueber_uns.php", "Über uns"],
             [Env::BASE_URL . "/liga/jubilaeum.php", "25 Jahre Liga"],
-            [Env::BASE_URL . "/liga/archiv.php", "Archiv"],
+            [Env::BASE_URL . "/archiv/uebersicht.php", "Archiv"],
             [Env::BASE_URL . "/ligacenter/lc_login.php", "Ligacenter"],
             [Env::BASE_URL . "/liga/kontakt.php", "Kontakt"],
             [Env::BASE_URL . "/liga/datenschutz.php", "Datenschutz"],

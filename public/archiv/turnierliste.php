@@ -21,8 +21,8 @@ include '../../templates/header.tmp.php';
 
 <!-- Zurück -->
 <br>
-<?=Html::link("archiv.php", "Zurück zum Archiv" , false, "arrow_back")?><br>
-<?=Html::link("archiv_saison.php?saison=" . $saison->get_saison_id(), "Zurück zur Saison " . $saison->get_saison_string() , false, "arrow_back")?>
+<?=Html::link("uebersicht.php", "Zurück zum Archiv" , false, "arrow_back")?><br>
+<?=Html::link("saison.php?saison=" . $saison->get_saison_id(), "Zurück zur Saison " . $saison->get_saison_string() , false, "arrow_back")?>
 
 <?php if ($saison->get_saison_id() == 25 || $saison->get_saison_id() == 26): ?>
     <div class="w3-card w3-panel w3-leftbar w3-border-yellow w3-pale-yellow">
@@ -36,10 +36,10 @@ include '../../templates/header.tmp.php';
 <h1 class="w3-text-primary">Turnierdetails der Saison <?=$saison->get_saison_string()?></h1>
 
 <p>
-    <?=(empty($ligaturniere)) ? '' : Html::link("archiv_turnierliste.php?saison=" . $saison->get_saison_id() . "#liste_liga" , "Liste der Ligaturniere" , false, "reorder") . '<br>'?>
-    <?=(empty($abschlussturniere)) ? '' : Html::link("archiv_turnierliste.php?saison=" . $saison->get_saison_id() . "#liste_final" , "Liste der Finalturniere" , false, "reorder") . '<br>'?>
-    <?=(empty($ligaturniere)) ? '' : Html::link("archiv_turnierliste.php?saison=" . $saison->get_saison_id() . "#ergebnisse_liga" , "Ergebnisse der Ligaturniere" , false, "reorder") . '<br>'?>
-    <?=(empty($abschlussturniere)) ? '' : Html::link("archiv_turnierliste.php?saison=" . $saison->get_saison_id() . "#ergebnisse_final" , "Ergebnisse der Finalturniere" , false, "reorder")?>
+    <?=(empty($ligaturniere)) ? '' : Html::link("turnierliste.php?saison=" . $saison->get_saison_id() . "#liste_liga" , "Liste der Ligaturniere" , false, "reorder") . '<br>'?>
+    <?=(empty($abschlussturniere)) ? '' : Html::link("turnierliste.php?saison=" . $saison->get_saison_id() . "#liste_final" , "Liste der Finalturniere" , false, "reorder") . '<br>'?>
+    <?=(empty($ligaturniere)) ? '' : Html::link("turnierliste.php?saison=" . $saison->get_saison_id() . "#ergebnisse_liga" , "Ergebnisse der Ligaturniere" , false, "reorder") . '<br>'?>
+    <?=(empty($abschlussturniere)) ? '' : Html::link("turnierliste.php?saison=" . $saison->get_saison_id() . "#ergebnisse_final" , "Ergebnisse der Finalturniere" , false, "reorder")?>
 </p>
 
 <?php if (!empty($ligaturniere)): ?>
@@ -58,7 +58,7 @@ include '../../templates/header.tmp.php';
         <?php foreach ($ligaturniere as $turnier): ?>
             <tr>
                 <td><?=strftime("%a", strtotime($turnier->get_datum()))?>, <?=strftime("%d.%m.", strtotime($turnier->get_datum()))?></a></td>
-                <td><?=Html::link('archiv_turnierliste.php?saison=' . $saison->get_saison_id() . '#'. $turnier->get_turnier_id(), $turnier->get_ort(), false)?></td>
+                <td><?=Html::link('turnierliste.php?saison=' . $saison->get_saison_id() . '#'. $turnier->get_turnier_id(), $turnier->get_ort(), false)?></td>
                 <td><?=$turnier->get_art() == 'final' ? '--' : $turnier->get_art()?></td>
                 <td><?=$turnier->get_tblock()== 'final' ? 'FINALE' : $turnier->get_tblock() ?></td>
             </tr>
@@ -82,7 +82,7 @@ include '../../templates/header.tmp.php';
         <?php foreach ($abschlussturniere as $turnier): ?>
             <tr>
                 <td><?=strftime("%a", strtotime($turnier->get_datum()))?>, <?=strftime("%d.%m.", strtotime($turnier->get_datum()))?></a></td>
-                <td><?=Html::link('archiv_turnier.php?turnier_id='. $turnier->get_turnier_id(), $turnier->get_ort(), false)?></td>
+                <td><?=Html::link('turnier.php?turnier_id='. $turnier->get_turnier_id(), $turnier->get_ort(), false)?></td>
                 <td><?=$turnier->get_tname() ?></td>
             </tr>
         <?php endforeach; ?>

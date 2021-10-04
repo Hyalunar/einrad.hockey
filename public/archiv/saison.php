@@ -29,7 +29,7 @@ include '../../templates/header.tmp.php';
 
 <!-- Zurück -->
 <br>
-<?=Html::link("archiv.php", "Zurück zum Archiv" , false, "arrow_back")?>
+<?=Html::link("uebersicht.php", "Zurück zum Archiv" , false, "arrow_back")?>
 
 <?php if ($saison->get_saison_id() == 25 || $saison->get_saison_id() == 26): ?>
     <div class="w3-card w3-panel w3-leftbar w3-border-yellow w3-pale-yellow">
@@ -43,9 +43,9 @@ include '../../templates/header.tmp.php';
 <h1 class="w3-text-primary">Archiv der Saison <?=$saison->get_saison_string()?></h1>
 
 <p>
-    <?=Html::link("archiv_turnierliste.php?saison=" . $saison->get_saison_id(), "Alle Turnierdetails" , false, "reorder")?><br>
-    <?=Html::link("archiv_saison.php?saison=" . $saison->get_saison_id() . "#meister" , "Meisterschaftstabelle" , false, "reorder")?><br>
-    <?=Html::link("archiv_saison.php?saison=" . $saison->get_saison_id() . "#rang" , "Rangtabelle" , false, "reorder")?>
+    <?=Html::link("turnierliste.php?saison=" . $saison->get_saison_id(), "Alle Turnierdetails" , false, "reorder")?><br>
+    <?=Html::link("saison.php?saison=" . $saison->get_saison_id() . "#meister" , "Meisterschaftstabelle" , false, "reorder")?><br>
+    <?=Html::link("saison.php?saison=" . $saison->get_saison_id() . "#rang" , "Rangtabelle" , false, "reorder")?>
 </p>
 
 <?php 
