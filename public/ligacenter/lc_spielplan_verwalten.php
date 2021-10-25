@@ -22,7 +22,7 @@ $turnier_ergebnis = $turnier->get_ergebnis();
 //Ergebnis löschen
 if (isset($_POST['ergebnis_loeschen'])) {
     $turnier->delete_ergebnis();
-    $turnier->set_phase('spielplan');
+    $turnier->update_phase('spielplan');
     Html::info("Ergebnis wurde gelöscht. Das Turnier wurde in die Spielplanphase versetzt.");
     header("Location: lc_spielplan_verwalten.php?turnier_id=" . $turnier->get_turnier_id());
     die();
@@ -54,16 +54,16 @@ if (isset($_POST['ergebnis_eintragen'])) {
     for ($platz = 1; $platz <= $anzahl_teams; $platz++) {
         $turnier->set_ergebnis($_POST['team_id'][$platz], $_POST['ergebnis'][$platz], $platz);
     }
-    $turnier->set_phase('ergebnis');
+    $turnier->update_phase('ergebnis');
     Html::info("Ergebnisse wurden manuell eingetragen. Das Turnier wurde in die Ergebnisphase versetzt.");
-    header("Location: lc_spielplan_verwalten.php?turnier_id=" . $turnier->details['turnier_id']);
+    header("Location: lc_spielplan_verwalten.php?turnier_id=" . $turnier->get_turnier_id());
     die();
 }
 
 // Spielplan automatisch erstellen
 if (isset($_POST['auto_spielplan_erstellen'])) {
     $error = false;
-    if ($turnier->details['phase'] != "melde") { //TODO and is ligaturnier
+    if ($turnier->get_phase() != "melde") { //TODO and is ligaturnier
         Html::error("Das Turnier muss in der Meldephase sein.");
         $error = true;
     }
@@ -71,14 +71,14 @@ if (isset($_POST['auto_spielplan_erstellen'])) {
         Html::error("Falsche Anzahl an Teams. Nur 4er - 8er Jeder-gegen-Jeden Spielpläne können erstellt werden.");
         $error = true;
     }
-    if (!empty($turnier->details['spielplan_link'])) {
+    if (!empty($turnier->get_spielplan_link())) {
         Html::error("Spielplan konnte nicht erstellt werden. Es existiert ein manuell hochgeladener Spielplan.");
         $error = true;
     }
     if (!$error) {
         if (Spielplan::fill_vorlage($turnier)) {
             Html::info("Das Turnier wurde in die Spielplan-Phase versetzt. Der Spielplan wird jetzt angezeigt.");
-            header('Location: ../liga/spielplan.php?turnier_id=' . $turnier->id);
+            header('Location: ../liga/spielplan.php?turnier_id=' . $turnier->get_turnier_id());
             die();
         }
 
@@ -112,7 +112,7 @@ if (isset($_POST['spielplan_hochladen'])) {
                 $turnier->upload_spielplan($target_file_pdf, 'spielplan');
                 Html::info("Manueller Spielplan hochgeladen. Das Turnier wurde in die Spielplan-Phase versetzt.");
             }
-            header("Location: lc_spielplan_verwalten.php?turnier_id=$turnier->id");
+            header("Location: lc_spielplan_verwalten.php?turnier_id=" . $turnier->get_turnier_id());
             die();
         }
         Html::error("Fehler beim Upload");
@@ -166,10 +166,10 @@ include '../../templates/header.tmp.php';
             </thead>
             <?php foreach ($teamliste as $team) { ?>
                 <tr>
-                    <td><?= $team['team_id'] ?></td>
-                    <td><?= $team['teamname'] ?></td>
-                    <td class="w3-center"><?= $team['tblock'] ?: 'NL' ?></td>
-                    <td class="w3-center"><?= $team['wertigkeit'] ?: 'Siehe Modus' ?></td>
+                    <td><?= $team->id ?></td>
+                    <td><?= $team->get_teamname() ?></td>
+                    <td class="w3-center"><?= $team->get_tblock() ?: 'NL' ?></td>
+                    <td class="w3-center"><?= $team->get_wertigkeit() ?: 'Siehe Modus' ?></td>
                 </tr>
             <?php } //end foreach?>
         </table>
@@ -204,7 +204,7 @@ include '../../templates/header.tmp.php';
 
     <form method="post" enctype="multipart/form-data">
 
-        <?php if (Spielplan::check_exist($turnier->get_turnier_id)) { ?>
+        <?php if (Spielplan::check_exist($turnier->get_turnier_id())) { ?>
             <p>Bitte zuerst den dynamischen Spielplan löschen.</p>
         <?php } else { ?>
 
@@ -267,8 +267,8 @@ include '../../templates/header.tmp.php';
                             </option>
                             <?php foreach ($teamliste as $team_id => $team) { ?>
                                 <option
-                                    <?php if (($turnier_ergebnis[$platz]['team_id'] ?? 0) == $team['team_id']){ ?>selected<?php } //endif?>
-                                    value="<?= $team['team_id'] ?>"><?= $team['teamname'] ?></option>
+                                    <?php if (($turnier_ergebnis[$platz]['team_id'] ?? 0) == $team->id){ ?>selected<?php } //endif?>
+                                    value="<?= $team->id ?>"><?= $team->get_teamname() ?></option>
                             <?php } //end foreach?>
                         </select>
                     </td>

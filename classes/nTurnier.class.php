@@ -593,7 +593,7 @@ class nTurnier
     {
         $sql = "
                 SELECT turniere_liste.team_id, teams_liga.teamname, teams_liga.ligateam,
-                    teams_details.ligavertreter, teams_details.trikot_farbe_1, teams_details.trikot_farbe_2
+                    teams_details.ligavertreter, teams_details.trikot_farbe_1, teams_details.trikot_farbe_2, turniere_liste.freilos_gesetzt
                 FROM turniere_liste
                 LEFT JOIN teams_liga
                 ON turniere_liste.team_id = teams_liga.team_id
@@ -615,6 +615,7 @@ class nTurnier
                 $temp = new Team($team_id);
                 $temp->set_wertigkeit($this->spieltag);
                 $temp->set_tblock($this->spieltag);
+                $temp->set_freilos_gesetzt($team['freilos_gesetzt']);    
                 $spielenliste[$team_id] = $temp;
             }
 
@@ -1358,7 +1359,7 @@ class nTurnier
     {
         $sql = "
                 DELETE FROM turniere_liste 
-                WHERE turnier_id = 
+                WHERE turnier_id = ?
                 AND team_id = ?
                 ";
         db::$db->query($sql, $this->turnier_id, $team_id)->log();
@@ -1451,7 +1452,7 @@ class nTurnier
             $this->set_ergebnis($team_id, $ergebnis['ligapunkte'], $ergebnis['platz']);
         }
 
-        $this->set_phase('ergebnis');
+        $this->update_phase('ergebnis');
         $this->set_log("Turnierergebnis wurde in die Datenbank eingetragen");
     }
 
@@ -1524,6 +1525,36 @@ class nTurnier
         $this->set_log("Turnier wurde gelöscht.");
         // Spieltage neu sortieren
         Ligabot::set_spieltage();
+    }
+
+    /**
+     * Ändert die Phase des Turniers, ohne dass das gesamte Turnier durch ein Update muss
+     * 
+     * @param string $phase
+     */
+    public function update_phase(string $phase): void
+    {
+        $sql = "
+            UPDATE turniere_liga
+            SET phase = ?
+            WHERE turnier_id = ?;
+        ";
+        db::$db->query($sql, $phase, $this->turnier_id)->log();
+        $this->set_log("Turnierphase angepasst");
+    }
+
+    /**
+     * Ermittelt, ob es sich um ein Ligaturnier handelt
+     * 
+     * @return bool
+     */
+    public function is_ligaturnier()
+    {
+        if ($this->art == 'spass') {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**
