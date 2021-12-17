@@ -99,6 +99,8 @@ class Nav
     {
         return [
             [Env::BASE_URL . "/liga/ueber_uns.php", "Über uns"],
+            [Env::BASE_URL . "/liga/nationalkader.php", "Nationalkader"],
+            [Env::BASE_URL . "/liga/nachwuchs.php", "Nachwuchs"],
             [Env::BASE_URL . "/liga/jubilaeum.php", "25 Jahre Liga"],
             [Env::BASE_URL . "/liga/archiv.php", "Archiv"],
             [Env::BASE_URL . "/ligacenter/lc_login.php", "Ligacenter"],
