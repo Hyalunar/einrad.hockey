@@ -44,6 +44,8 @@ class Config
     public const LOG_KONTAKTFORMULAR = "kontakt.log";
     public const LOG_EMAILS = "emails.log";
     public const LOG_USER = "user.log";
+    public const LOG_SCHIRI_UEBUNGSTEST = "schiri_uebungstest.log";
+    public const LOG_SCHIRI_PRUEFUNG = "schiri_pruefung.log";
 
 
     /**
@@ -85,8 +87,18 @@ class Config
     ];
 
     /**
+     * Turnierarten
+     */
+    public const TURNIER_ARTEN = ['I', 'II', 'III'];
+
+    /**
      * Ligagebühr
      */
     public const LIGAGEBUEHR = "30&nbsp;€";
+
+    /**
+     * Kontaktcenter
+     */
+    public const BCC_GRENZE = 12;
 
 }

@@ -66,9 +66,9 @@ if (isset($_POST['gitpull'])){
         $password = $_POST['password'];
 
         if (password_verify($password, $hash)) {
-
             $output = shell_exec("sh " . Env::BASE_PATH . "/system/shell/gitpull.sh");
-            Helper::log("git.log", $output);
+
+            Helper::log("git.log", $output ?? 'EMPTY OUTPUT');
             db::debug($output);
             Helper::reload();
 
