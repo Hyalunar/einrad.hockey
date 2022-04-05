@@ -1,93 +1,66 @@
 <?php
-//Formularauswertung Turnier bearbeiten für Ligaausschuss
 
-//Formularauswertung Turnier löschen
+// Formularauswertung Turnier löschen
 if (isset($_POST['delete_turnier'])) {
-    if($akt_turnier->delete()){
-        $akt_turnier->schreibe_log("Turnier wurde gelöscht", "Ligaausschuss");
-        Ligabot::liga_bot(); //Um die Spieltage neu zu verteilen
-        Form::affirm("Turnier wurde gelöscht");
-        header('Location: ../liga/turniere.php');
-        die();
+    if ($_POST['delete_turnier_check'] !== 'checked') {
+        Html::error('Bitte Hinweistext vor dem Löschen des Turnieres lesen.');
+    } else {
+        $turnier->delete($_POST['delete_turnier_grund']);
+        Html::info("Turnier wurde gelöscht");
+        Helper::reload('/ligacenter/lc_turnierliste.php#deleted');
     }
 }
 
-//Forumlarauswertung Turnierdaten ändern
-if (isset($_POST['turnier_bearbeiten_la'])) {  
+// Forumlarauswertung Turnierdaten ändern
+if (isset($_POST['turnier_bearbeiten_la'])) {
     $error = false;
-    //Ausrichter setzen
-    if (isset($_POST['ausrichter'])){
-        $ausrichter = Team::teamname_to_teamid($_POST['ausrichter']);
-        if (empty($ausrichter)){
-            $error = true;
-            Form::error ("Ausrichter wurde nicht gefunden");
-        }
-    }
-    //Turnierblock ändern:
-    $art = $_POST['art']; 
-    if ($art == "III"){
-        $tblock = $_POST['block'];
-        $fixed = "Ja";
-    }elseif($art == "spass"){
-        $tblock = "spass";
-        $fixed = "Ja";
-    }elseif($art == "fixed"){
-        $tblock = $_POST['block'];
-        $fixed = "Ja";
-    }elseif ($art == "final"){
-        $tblock = "final";
-        $fixed = "Ja";
-    }elseif ($art == "I"){
-        $fixed = "Nein";
-        $tblock = $_POST['block'];
-    }elseif ($art == "II"){
-        $fixed = "Nein";
-        $tblock = $_POST['block'];
-    }else{
+    
+    // Ausrichter setzen
+    $ausrichter = Team::name_to_id($_POST['ausrichter']);
+
+    if (is_null($ausrichter)) {
         $error = true;
-        Form::error("Ungültiger Turnierblock");
+        Html::error('Der Ausrichter wurde nicht gefunden.');
+    } elseif (!Team::is_ligateam($ausrichter)) {
+        $error = true;
+        Html::error("Der Ausrichter ist ein NL-Team");
     }
-    //Restliche Daten:
+
+    // Turnierblock ändern:
+    $art = $_POST['art'];
+
+    // Fixierter Turnierblock?
+    $fixed = match ($art) {
+        'I', 'II' => 'Nein',
+        default => 'Ja'
+    };
+
+
+    // Restliche Daten:
+    $tblock = $_POST['block'];
     $datum = $_POST['datum'];
     $phase = $_POST['phase'];
     $tname = $_POST['tname'];
-    if (empty($datum) or empty($phase)){
-        Form::error('Datum und/oder Phase sind leer');
+
+    if (empty($datum) || empty($phase)) {
+        Html::error('Datum und/oder Phase sind leer');
         $error = true;
     }
 
-    //Ändern der Turnierdaten
-    if (!$error){
-        if ($akt_turnier->change_turnier_liga($tname, $ausrichter, $art, $tblock, $fixed, $datum, $phase)){
-            Form::affirm("Turnierdaten wurden geändert");
-            if ($daten['datum'] != $datum){
-                LigaBot::set_spieltage(); //Spieltage ändern sich eventuell, je nach Datumsveränderung
-                $akt_turnier->schreibe_log("Datum: " . $daten['datum'] ." -> ". $datum, "Ligaausschuss", "Ligaausschuss"); 
-            }
-            if ($daten['tname'] != $tname){
-                $akt_turnier->schreibe_log("Turniername: " . $daten['tname'] ." -> ". $tname, "Ligaausschuss");
-            }
-            if ($daten['ausrichter'] != $ausrichter){
-                $akt_turnier->schreibe_log("Ausrichter: " . $daten['teamname'] ." -> ". Team::teamid_to_teamname($ausrichter), "Ligaausschuss");
-            }
-            if ($daten['art'] != $art){
-                $akt_turnier->schreibe_log("Art: " . $daten['art'] ." -> ". $art, "Ligaausschuss");
-            }
-            if ($daten['tblock'] != $tblock){
-                $akt_turnier->schreibe_log("Turnierblock: " . $daten['tblock'] ." -> ". $tblock, "Ligaausschuss");
-            }
-            if ($daten['tblock_fixed'] != $fixed){
-                $akt_turnier->schreibe_log("Fixiert: " . $daten['tblock_fixed'] ." -> ". $fixed, "Ligaausschuss");
-            }
-            if ($daten['phase'] != $phase){
-                $akt_turnier->schreibe_log("Phase: " . $daten['phase'] ." -> ". $phase, "Ligaausschuss");
-            }
-            header('Location: ../liga/turnier_details.php?turnier_id=' . $daten['turnier_id']);
-            die();
-        }else{
-            $akt_turnier->schreibe_log("Fehler beim Schreiben der Datenbank", "Ligaausschuss");
-        }
-    }else{
-        Form::error("Es ist ein Fehler aufgetreten. Turnier wurde nicht geändert - alle Änderungen bitte neu eingeben.");
+    // Ändern der Turnierdaten
+    if (!$error) {
+        $turnier->set_tname($tname)
+                ->set_ausrichter($ausrichter)
+                ->set_art($art)
+                ->set_tblock($tblock)
+                ->set_fixed_tblock($fixed)
+                ->set_datum($datum)
+                ->set_phase($phase)
+                ->set_database();
+
+        Html::info("Turnierdaten wurden geändert");
+        Helper::reload('/liga/turnier_details.php?turnier_id=' . $turnier->get_turnier_id());
+    } else {
+        Html::error("Es ist ein Fehler aufgetreten. Turnier wurde nicht geändert - alle Änderungen bitte neu eingeben.");
     }
 }

@@ -2,27 +2,23 @@
 /////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////LOGIK////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
-require_once '../../logic/first.logic.php'; //autoloader und Session
+require_once '../../init.php';
 require_once '../../logic/session_la.logic.php'; //Auth
 
-//Turnierobjekt erstellen
-$turnier_id = $_GET['turnier_id'];
-$akt_turnier = new Turnier ($turnier_id);
+// Turnierobjekt erstellen
+$turnier = nTurnier::get((int) @$_GET['turnier_id']);
 
-//Turnierdaten bekommen
-$daten = $akt_turnier->daten;
+// Logs des Turnieres bekommen
+$logs = $turnier->get_log();
 
-//Logs des Turnieres bekommen
-$logs = $akt_turnier->get_logs();
-
-//Gelöschtes Turnier
-if (empty($daten) & !empty($logs)){
-    Form::attention("Turnier wurde gelöscht.");
+// Gelöschtes Turnier
+if (empty($turnier->get_turnier_id()) & !empty($logs)){
+    Html::notice("Turnier wurde gelöscht.");
 }
 
-//Gelöschtes Turnier
-if (empty($daten) & empty($logs)){
-    Form::attention("Es wurden keine Turnierlogs gefunden");
+// Turnier nicht gefunden
+if (empty($turnier->get_turnier_id()) & empty($logs)){
+    Html::notice("Es wurden keine Turnierlogs gefunden");
     header('Location: lc_turnierliste.php');
     die();
 }
@@ -32,8 +28,10 @@ if (empty($daten) & empty($logs)){
 /////////////////////////////////////////////////////////////////////////////
 include '../../templates/header.tmp.php';
 ?>
-<?php if (!empty($daten)){?>
-    <h2>Turnierlog <?=$daten['datum'] . ' ' . $daten['tname']?> <?=$daten['ort']?> (<?=$daten['tblock']?>)</h2>
+<?php if (!empty($turnier->get_turnier_id())){?>
+    <h2>Turnierlog <?=$turnier->get_datum() . ' ' . $turnier->get_tname()?> <?=$turnier->get_ort()?> (<?=$turnier->get_tblock()?>)</h2>
+<?php }else{ ?>
+    <h2>Turnierlog Turnier-ID <?=$turnier->get_turnier_id()?></h2>
 <?php } //endif?>
 <div class="w3-responsive w3-card">
     <table class="w3-table w3-striped">
