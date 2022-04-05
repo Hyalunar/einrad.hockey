@@ -2,63 +2,48 @@
 /////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////LOGIK////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
-require_once '../../logic/first.logic.php'; //autoloader und Session
+require_once '../../init.php';
 require_once '../../logic/session_team.logic.php'; //Auth
 
-//Teamspezifisches
-$akt_team = new Team($_SESSION['team_id']);
-$turnier_angemeldet = $akt_team->get_turniere_angemeldet();
-$anz_freilose = $akt_team->get_freilose();
+// Teamspezifisches
+$team_id = $_SESSION['logins']['team']['id'];
+$team = new Team($team_id);
+$team_turniere_angemeldet = $team->get_turniere_angemeldet();
+$team_anz_freilose = $team->get_freilose();
 
-//Relevante Turniere finden
-$heute = date("Y-m-d", Config::time_offset());
-$turniere = Turnier::get_all_turniere("WHERE turniere_liga.datum > '$heute'"); //wird dem Template übergeben
-
-//Hinweis Live-Spieltag
+// Hinweis Live-Spieltag
 $akt_spieltag = Tabelle::get_aktuellen_spieltag();
 if (Tabelle::check_spieltag_live($akt_spieltag)){
-    Form::attention(
+    Html::notice(
         "Für den aktuelle Spieltag (ein Spieltag ist immer ein ganzes Wochenende) wurden noch nicht alle Ergebnisse eingetragen. Für die Turnieranmeldung gilt immer der Teamblock des letzten vollständigen Spieltages: "
-        . Form::link("../liga/tabelle.php?spieltag=" . ($akt_spieltag - 1) . "#rang", "Spieltag " . ($akt_spieltag - 1)));
+        . Html::link("../liga/tabelle.php?spieltag=" . ($akt_spieltag - 1) . "#rang", "Spieltag " . ($akt_spieltag - 1)));
 }
 
-//Füge Links zum Weiterverarbeiten der ausgewählten Turniere hinzu
-//diese werden dem Teamplate übergeben
-foreach ($turniere as $turnier_id => $turnier){
-    //Links
-    $turniere[$turnier_id]['links'] = 
-        array(
-            Form::link("tc_team_anmelden.php?turnier_id=".$turnier_id,'<i class="material-icons">how_to_reg</i> ' . $_SESSION['teamname'] . ' an/abmelden (Zur Anmeldeseite)'), 
-            Form::link("../liga/turnier_details.php?turnier_id=".$turnier_id, '<i class="material-icons">info</i> Zu den Turnierdetails')
-        );
-        
-    //Farbe des Turnierblocks festlegen
-    $freilos = true;
-    $turniere[$turnier_id]['block_color'] = 'w3-text-red';
-    if (Turnier::check_team_block_static($_SESSION['teamblock'],$turnier['tblock'])){
-        $turniere[$turnier_id]['block_color'] = 'w3-text-green';
-        $freilos = false;
-    }
-    if ($freilos && Turnier::check_team_block_freilos_static($_SESSION['teamblock'],$turnier['tblock']) && $anz_freilose>0){
-        $turniere[$turnier_id]['block_color'] = 'w3-text-yellow';
-    }
+// Relevante Turniere finden
+$db_turniere = nTurnier::get_turniere_kommend();
 
-    //Einfärben wenn schon angemeldet
-    $turniere[$turnier_id]['row_color'] = '';
-    if (isset($turnier_angemeldet[$turnier['turnier_id']])){
-        $liste = $turnier_angemeldet[$turnier['turnier_id']];
-        if ($liste == 'spiele'){
-            $turniere[$turnier_id]['row_color'] = 'w3-pale-green';
-        }
-        if ($liste == 'melde'){
-            $turniere[$turnier_id]['row_color'] = 'w3-pale-yellow';
-        }
-        if ($liste == 'warte'){
-            $turniere[$turnier_id]['row_color'] = 'w3-pale-blue';
-        }
-    }
-}
-include '../../logic/turnierliste.logic.php';
+if (!empty($db_turniere)) {
+  // Gefundene Turniere werden aufbereitet
+  foreach ($db_turniere as $turnier) {
+    $turnier_id = $turnier->get_turnier_id();
+
+    include '../../logic/turnierliste.logic.php';
+
+    $turniere[$turnier_id]['links'] =
+      array(
+        Html::link("tc_team_anmelden.php?turnier_id=" . $turnier_id, 'An- / Abmeldung', false, 'how_to_reg'),
+        Html::link("../liga/turnier_details.php?turnier_id=" . $turnier_id, 'Turnierdetails', false, 'info')
+      );
+  }
+} else {
+  // Da keine Tunriere gefunden wurden, wird auf die TC-Startseite umgeleitet
+  Html::notice(
+    'Bisher sind keine Turniere ausgeschrieben.',
+    esc: false
+  );
+  Helper::reload('/teamcenter/tc_start.php');
+} // end if
+
 /////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////LAYOUT///////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
@@ -66,9 +51,11 @@ include '../../templates/header.tmp.php';?>
 
 <h2 class="w3-text-primary" style='display: inline;'>Turnieranmeldung und -abmeldung</h2>
 <!-- Trigger/Open the Modal -->
-<button onclick="document.getElementById('id01').style.display='block'"
-class="w3-button w3-text-blue w3-right" style='display: inline;'>Legende</button>
-
+<p>
+    <button onclick="document.getElementById('id01').style.display='block'" class="w3-button w3-text-primary">
+        <?= Html::icon("help") ?> Legende
+    </button>
+</p>
 <!-- The Modal -->
 <div id="id01" class="w3-modal">
   <div class="w3-modal-content" style="max-width:400px">
@@ -89,6 +76,7 @@ class="w3-button w3-text-blue w3-right" style='display: inline;'>Legende</button
         <br>
         <i><span class="w3-text-green">frei</span>: Plaetze auf der Spielen-Liste frei</i><br>
         <i><span class="w3-text-red">voll</span>: Spielen-Liste ist voll</i><br>
+        <i><span class="w3-text-gray">geschlossen</span>: Anmeldung nicht mehr möglich</i><br>
         </p>
     </div>
   </div>
