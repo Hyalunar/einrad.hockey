@@ -95,14 +95,14 @@ include '../../templates/header.tmp.php';
         <p>
             <i class="w3-xxlarge w3-text-grey material-icons">insert_drive_file
             </i>
-            Datenschutzhinweise
+            Datenschutzhinweise (pdf)
         </p>
     </a>
     <a class="no w3-hover-text-secondary" href="<?= Nav::LINK_SPIELPLAENE_ALT ?>">
         <p>
             <i class="w3-xxlarge w3-text-grey material-icons">insert_drive_file
             </i>
-            alte Spielplanvorlagen
+            alte Spielplanvorlagen (zip)
         </p>
     </a>
     <p class="w3-text-grey w3-border-grey w3-border-bottom w3-right-align">15.08.2022</p>
